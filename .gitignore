@@ -1,0 +1,6 @@
+﻿# Large archives & media
+*.zip
+*.pptx
+extracted_slides/
+rawData/
+.gemini/
