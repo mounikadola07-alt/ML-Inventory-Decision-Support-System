@@ -1,0 +1,48 @@
+{
+  "title": "An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support",
+  "upload_type": "software",
+  "description": "Replication package and empirical research codebase for evaluating machine learning retail demand forecasting under asymmetric inventory loss and continuous-review (s, Q) replenishment control. Includes leakage-safe walk-forward validation routines, Eve's Law lead-time variance decomposition, dual-moment Jensen inequality smearing corrections, Platt-calibrated demand surge classification, and 8,000-step event-driven continuous simulation benchmarking.",
+  "creators": [
+    {
+      "name": "Sashank, P.",
+      "affiliation": "Koneru Lakshmaiah Education Foundation, Hyderabad, India",
+      "orcid": "0009-0000-0000-0000"
+    },
+    {
+      "name": "Abhinay Sai",
+      "affiliation": "Koneru Lakshmaiah Education Foundation, Hyderabad, India"
+    },
+    {
+      "name": "Poli Naidu",
+      "affiliation": "Koneru Lakshmaiah Education Foundation, Hyderabad, India"
+    },
+    {
+      "name": "Sushama Rani Dutta",
+      "affiliation": "Koneru Lakshmaiah Education Foundation, Hyderabad, India"
+    }
+  ],
+  "access_right": "open",
+  "license": "MIT",
+  "keywords": [
+    "demand-forecasting",
+    "inventory-control",
+    "machine-learning",
+    "continuous-review",
+    "supply-chain-optimization",
+    "eves-law",
+    "jensen-inequality",
+    "surge-detection",
+    "lightgbm"
+  ],
+  "communities": [
+    {
+      "identifier": "supply-chain-analytics"
+    }
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://doi.org/10.1016/j.ijforecast.2026.01.001"
+    }
+  ]
+}
