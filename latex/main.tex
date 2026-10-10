@@ -1,0 +1,238 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{lineno}
+\usepackage{xcolor}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proofpart}{Part}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue
+}
+
+\title{\textbf{An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support}}
+
+\author{
+  \textbf{Sashank P.}, \textbf{Abhinay Sai}, \textbf{Poli Naidu}, and \textbf{Sushama Rani Dutta} \\
+  Department of Computer Science and Engineering, \\
+  Koneru Lakshmaiah Education Foundation, Hyderabad, Telangana, India \\
+  \texttt{sashank.p@klh.edu.in}
+}
+
+\date{10 October 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Modern enterprise supply chains operate under an inherently asymmetric penalty structure where customer stockouts incur catastrophic lost-sales and brand-equity penalties, while holding excess inventory incurs marginal capital-carrying costs. Despite this operational asymmetry, enterprise machine learning forecasting deployments routinely evaluate models using symmetric loss objectives such as Mean Absolute Error (MAE) and Root Mean Squared Error (RMSE). In this paper, we develop an adaptive inventory decision support system based on Supervised Gradient Boosted Decision Trees (LightGBM, XGBoost, Random Forest), Tweedie Compound Poisson-Gamma Deviance, Continuous-Review $(s, Q)$ Inventory Control, and Trigg's Automated Tracking Signal. The pipeline takes into account multi-regime transaction logs, estimates non-linear promotional and calendar harmonics, detects demand surge probabilities, and sizes stochastic buffer stocks via Eve's Law of Total Variance. We train and test our models using three heterogeneous benchmark datasets consisting of 541,909 wholesale transactions from Online Retail, 143 weeks across 45 Walmart retail stores, and 1,914 days from the M5 intermittent grocery benchmark. Our Calibrated LightGBM surge classifier achieves AUC-ROC = 0.928 with 83.2\% accuracy, significantly outperforming uncalibrated baseline models (AUC = 0.726). Moreover, in our closed-loop simulation of the replenishment process over 8,000 interaction steps, enforcing a Tri-Criterion operational bias safeguard ($|\text{Bias}\,\%| \le 5.0\%$) eliminated 24 stockout days and delivered a 92.9\% reduction in total inventory operating costs compared to statistical accuracy-first policies, while liberating 49.9\% of safety buffer capital.
+\end{abstract}
+
+\textbf{Keywords:} Demand Forecasting, Inventory Decision Support, Continuous-Review $(s, Q)$, Gradient Boosting, Jensen's Inequality, Tweedie Deviance, Operational Bias Safeguards, Supply Chain Analytics.
+
+\section{Introduction}
+Acquiring high service reliability in commercial distribution systems such as retail merchandising and wholesale logistics demands sustained forecast precision, structured safety buffer sizing, and timely replenishment feedback. However, conventional enterprise resource planning (ERP) platforms predominantly employ a static ``one size fits all'' paradigm, presenting identical unconstrained point forecasts to inventory controllers irrespective of downstream penalty asymmetries and demand lumpiness. This uniform instructional pacing introduces substantial operational challenges: models that optimize purely for symmetric statistical metrics frequently underestimate buffer requirements during demand surges, producing severe inventory starvation, lost sales, and permanent customer defection; conversely, uncalibrated positive bias drives chronic working capital tie-up and warehouse spoilage.
+
+To address these limitations, we formulate an intelligent inventory decision support framework that unifies leakage-safe feature engineering, supervised gradient boosted ensembling, demand surge classification, and adaptive continuous-review $(s, Q)$ replenishment control. Grounded in stochastic inventory theory and Eve's Law of Total Variance, our system continuously evaluates forecast error distributions and dynamically recommends optimal replenishment order quantities and safety stock bands to keep enterprise customer fill rates within the desirable 95\%--100\% service zone.
+
+As retail demand transactions stream into the replenishment interface, the framework captures granular interaction logs---including item identifiers, transaction quantities, customer return records, and millisecond timestamps. These signals are continuously transformed into latent demand predictors via a dual feature engineering engine: autoregressive lag structures with cyclical trigonometric harmonics for capturing deterministic seasonality, and rolling volatility estimators for quantifying instantaneous demand dispersion. In turn, a Tri-Criterion Operational Selection policy uses the estimated forecast distributions to choose the optimal replenishment model, balancing working capital tie-up against catastrophic stockout penalties.
+
+\section{Literature Review}
+\cite{syntetos2005accuracy} evaluated 2,640 inventory series and demonstrated that minimizing Mean Squared Error (MSE) or Mean Absolute Percentage Error (MAPE) does not guarantee minimum inventory costs or optimal fill rates. This supports our finding that statistical loss minimization must be decoupled from operational replenishment evaluation.
+
+\cite{wallstrom2010evaluation} investigated intermittent demand metrics and proved that percentage error metrics suffer catastrophic zero-denominator breakdown when demand is zero, introducing severe distortions into model benchmarking.
+
+\cite{kolassa2016evaluating} argued that forecasting models deployed for inventory control must be evaluated under asymmetric, cost-aligned loss functions, proving that symmetric error penalties encourage models to underestimate buffer requirements when shortage costs exceed holding costs.
+
+\cite{croston1972forecasting} developed the classical decomposition separating demand arrival intervals from non-zero order sizes, establishing foundational baselines for intermittent inventory management.
+
+\cite{teunter2011intermittent} extended this framework to accommodate obsolescence and sudden demand drop-offs through separate updating constants for demand level and inter-arrival probability.
+
+\cite{silver1998inventory} established canonical continuous-review $(s, Q)$ policies, lead-time demand convolution, safety stock buffer derivation, and Economic Order Quantity dynamics. Their work provides the analytical inventory formulation for our replenishment simulation.
+
+\cite{eppen1988determining} analyzed multi-period stochastic lead-time demand, establishing that replenishment buffers must absorb both demand rate volatility and transit lead-time uncertainty.
+
+\cite{breiman2001random} introduced Random Forests, proving that aggregating decorrelated decision trees dramatically shrinks prediction variance without inflating bias on noisy tabular data.
+
+\cite{chen2016xgboost} developed XGBoost, formulating second-order Taylor series expansions of arbitrary loss functions with sparsity-aware split finding and explicit regularization penalties.
+
+\cite{ke2017lightgbm} created LightGBM, introducing Gradient-based One-Side Sampling (GOSS) and Exclusive Feature Bundling (EFB) to accelerate training across millions of retail observations.
+
+\section{Proposed Methodology}
+Our intelligent inventory decision support system models demand progression through continuous transaction logging, leakage-free feature engineering, and closed-loop stochastic replenishment control. The pipeline executes across coordinated phases spanning multi-regime transaction ingestion, chronological expanding-window splitting, recursive Fourier harmonic generation, tree-based gradient boosting, and automated tracking signal surveillance.
+
+The end-to-end architecture is organized into four decoupled tiers: the Presentation \& Telemetry Layer (replenishment dashboard \& exception alerts), Ingestion \& Preprocessing Engine (cancellation filtering and panel alignment), Predictive Modeling Tier (supervised gradient boosted ensembles and calibrated surge classifiers), and Stochastic Replenishment Decision Policy (continuous-review $(s, Q)$ control engine).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/fig1_methodology.png}
+    \caption{End-to-end machine learning pipeline workflow and closed-loop feedback mechanism.}
+    \label{fig:methodology}
+\end{figure}
+
+Figure~\ref{fig:methodology} illustrates the end-to-end dataflow and closed-loop control architecture of the proposed inventory decision support system. The pipeline begins with raw transaction logs captured from commercial benchmarks, encompassing customer identifiers, SKU parameters, order quantities, cancellation flags, and purchase timestamps. In the preprocessing phase, sparse SKU interaction sessions are filtered, transaction quantities are standardized, and dates are mapped to continuous Cartesian SKU-date grids. The feature engineering layer computes leakage-safe autoregressive lags (1, 2, 4, 7, 52), rolling statistics (mean, std, momentum ratios), and cyclical Fourier harmonics strictly prior to forecast origin $t_0$. Concurrently, sequential transaction streams feed into a dual-engine predictor consisting of tree-based regression ensembles for continuous conditional expectations and a calibrated surge classifier for early warning alerts. The resulting forecast distribution and variance parameters are discretized into a continuous-review $(s, Q)$ policy, while subsequent customer demand signals stream back through a real-time telemetry loop, driving adaptive model selection.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/fig2_model_comparison.png}
+    \caption{Multi-tier intelligent replenishment decision support architecture across presentation, telemetry, feature engineering, predictive modeling, and inventory control policy layers.}
+    \label{fig:architecture}
+\end{figure}
+
+Figure~\ref{fig:architecture} depicts the modular multi-tier architectural hierarchy designed for scalable, low-latency enterprise decision support. The architecture is decomposed into four decoupled functional tiers: (1) Presentation \& Telemetry Tier: Handles responsive operator UI rendering, real-time transaction capture, exception streaming, and automated reorder execution; (2) Ingestion \& Feature Engineering Engine: Implements strictly forward-filled price tracking, rolling dispersion calculations, and calendar harmonics; (3) State Estimation \& Predictive Engine: Combines tree-based bagging (Random Forest) and gradient boosting (LightGBM, XGBoost) with Platt probability calibration to generate conditional demand expectations and surge alarm probabilities; and (4) Stochastic Inventory Decision Policy: Houses the continuous-review $(s, Q)$ decision engine governed by a Tri-Criterion Operational Selection rule, sizing safety stocks and batch orders via Eve's Law of Total Variance.
+
+\subsection{Mathematical Formulations and Theoretical Proofs}
+
+\begin{theorem}[Jensen's Inequality Retransformation Deficit]
+When models optimize Mean Squared Error on logarithmic targets $z = \ln(1+y)$, naive exponentiation $\hat{y} = \exp(\hat{z}) - 1$ estimates the conditional geometric median rather than the conditional mean:
+\begin{equation}
+\mathbb{E}[\ln(1 + Y)] < \ln(1 + \mathbb{E}[Y]) \implies \hat{y}_{\text{naive}} = \exp(\hat{z}) - 1 < \mathbb{E}[Y]
+\end{equation}
+\end{theorem}
+
+\begin{theorem}[Tweedie Zero-Gradient Divergence]
+For compound Poisson-Gamma power parameter $p \in (1, 2)$ ($p = 1.5$), the unit deviance gradient at zero actual demand exhibits explosive divergence as positive predictions approach zero:
+\begin{equation}
+\frac{\partial d(0, \mu)}{\partial \mu} = \frac{2}{\sqrt{\mu}} \implies \lim_{\mu \to 0^+} \frac{\partial d(0, \mu)}{\partial \mu} = +\infty
+\end{equation}
+\end{theorem}
+
+\begin{theorem}[Stochastic Lead-Time Sizing via Eve's Law]
+Applying the Law of Total Variance across stochastic supplier lead times $L$ and forecast errors $e$:
+\begin{equation}
+\sigma_{D_L}^2 = \bar{L}\sigma_e^2 + \hat{d}^2\sigma_L^2, \quad SS = Z_\alpha \sigma_{D_L}, \quad ROP = \hat{d}\bar{L} + SS, \quad EOQ = \sqrt{\frac{2 K \hat{D}}{h}}
+\end{equation}
+\end{theorem}
+
+\section{Experimental Results and Analysis}
+We evaluated our decision support pipeline across three contrasting commercial benchmarks: 143 weekly observations across 45 Walmart regional stores, 541,909 wholesale transactions from the UCI Online Retail repository, and 1,913 daily grocery sales series from the M5 forecasting benchmark.
+
+\subsection{Predictive Performance Evaluation}
+As reported in Table~\ref{tab:predictive}, our audited tree ensembles and Platt-calibrated models significantly outperform classical persistence baselines across all retail regimes. On Walmart weekly sales, Random Forest achieved an out-of-sample MAE of \$35,624.48 ($R^2 = 0.9905$) with an operational bias of $-0.28\%$. In Online Retail, Random Forest secured MAE = 90.57 units with a tight $+3.14\%$ bias, while naive Log1p XGBoost collapsed into severe negative bias ($-57.18\%$). On the demand surge detection task, Calibrated LightGBM achieved an AUC-ROC of 0.9278 with 83.21\% accuracy, outperforming uncalibrated baselines (AUC = 0.726).
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Cross-regime predictive performance comparison across commercial retail benchmarks.}
+\label{tab:predictive}
+\begin{tabular}{llrrrrr}
+\toprule
+\textbf{Benchmark Regime} & \textbf{Model Architecture} & \textbf{Primary Loss} & \textbf{Holdout MAE} & \textbf{Holdout RMSE} & \textbf{Holdout Bias \%} & \textbf{Operational Status} \\
+\midrule
+Walmart Sales (\$) & Naive Lag-1 Baseline & Persistence & \$50,865 & \$76,053 & -0.15\% & Benchmark Reference \\
+Walmart Sales (\$) & LightGBM MSE & Squared Error (L2) & \$39,440 & \$60,083 & -0.34\% & Candidate Valid \\
+Walmart Sales (\$) & Random Forest & Variance Reduction & \$35,624 & \$52,196 & -0.28\% & Champion (Policy C) \\
+Online Retail (u) & Log1p XGBoost & MSE on $\ln(1+y)$ & 72.21 u & 212.76 u & -57.18\% & Disqualified (Jensen) \\
+Online Retail (u) & LightGBM Tweedie & Tweedie ($p=1.5$) & 76.40 u & 198.23 u & -12.73\% & Disqualified (Tweedie) \\
+Online Retail (u) & Random Forest & Squared Error & 90.57 u & 236.31 u & +3.14\% & Champion (Policy C) \\
+M5 Grocery (u) & Croston SBA & Intermittent Decomp & 0.8512 u & 1.4307 u & -58.97\% & Disqualified (Bias) \\
+M5 Grocery (u) & Random Forest & Variance Reduction & 1.0571 u & 1.3452 u & +23.20\% & Anti-Stockout Buffer \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Longitudinal Inventory Policy Evaluation}
+To evaluate downstream operational replenishment performance, we simulated continuous-review $(s, Q)$ replenishment control over 8,000 discrete demand interaction steps. Table~\ref{tab:policies} contrasts the proposed Bias-Constrained policy (Policy C) against three industry standard inventory selection strategies.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Longitudinal replenishment policy benchmark results across 8,000 interactions.}
+\label{tab:policies}
+\begin{tabular}{llrrrr}
+\toprule
+\textbf{Replenishment Policy} & \textbf{Model Selection Rule} & \textbf{Fill Rate (\%)} & \textbf{Stockouts} & \textbf{Total Cost} & \textbf{Capital Saved} \\
+\midrule
+Policy A (Naive Baseline) & Historical Mean / Total Var & 98.20\% & 5 days & \$176,920 & 0.0\% (Baseline) \\
+Policy B (Statistical Min MAE) & Lowest Holdout Point MAE & 81.40\% & 24 days & \$128,540 & +12.4\% (Starvation) \\
+Policy D (Direct Cost-Aware) & Asymmetric Penalty Loss & 100.00\% & 0 days & \$8,840 & +48.2\% \\
+Policy C (Proposed Bias-Constrained) & $|\text{Bias}\,\%| \le 5\%$ then Min MAE & 100.00\% & 0 days & \$9,210 & +49.9\% (Optimal) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The proposed Policy C achieved a flawless 100.0\% cycle fill rate across the entire 8,000-step simulation horizon, completely eliminating the 24 stockout days suffered by the Min MAE policy (Policy B). Furthermore, Policy C delivered a 92.9\% reduction in total inventory operating costs compared to Policy B (\$9,210 vs. \$128,540), while liberating 49.9\% of safety buffer working capital (\$135.7k vs. \$270.8k) by sizing stochastic buffers strictly from residual forecast error variance via Eve's Law.
+
+\section{Empirical Visualizations and Discussion}
+The empirical findings across each phase of our experimental pipeline are visualized in Figures~\ref{fig:eda} through~\ref{fig:telemetry}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/fig3_forecast_tracking.png}
+    \caption{Exploratory data analysis across retail regimes: (a) weekly sales distributions, (b) wholesale transaction volumes, (c) 63.28\% zero-inflation sparsity.}
+    \label{fig:eda}
+\end{figure}
+
+Figure~\ref{fig:eda} presents the exploratory data analysis (EDA) conducted across our three commercial benchmark datasets. Subplot (a) reveals the wide store-level monetary demand distributions in the Walmart dataset across 45 stores, where baseline weekly sales span \$273,000 to \$2,100,000 per store. Subplot (b) illustrates the heavy-tailed transaction quantity distribution in the Online Retail panel, where wholesale order spikes reach up to 80,995 units per transaction. Subplot (c) displays the global target zero-demand frequency in the M5 grocery benchmark, comprising 63.28\% true zero-demand days ($Y=0$).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig4_inventory_policy.png}
+    \caption{Continuous-review $(s, Q)$ replenishment control bands and safety stock buffer trajectories across fluctuating demand.}
+    \label{fig:bands}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig5_loss_functions.png}
+    \caption{Loss curvature and gradient dynamics under asymmetric penalties, contrasting Log1p median-shift against Tweedie zero-gradient divergence.}
+    \label{fig:losses}
+\end{figure}
+
+Figure~\ref{fig:losses} contrasts the mathematical loss surfaces and gradient trajectories governing machine learning forecast optimization under non-linear target transformations. Subplot (a) illustrates Jensen's inequality retransformation distortion: fitting Mean Squared Error on logarithmic targets $z = \ln(1+y)$ penalizes deviations symmetrically in log-space, but exponential back-transformation shifts the expected prediction to the geometric median, resulting in systematic $-55.9\%$ to $-81.3\%$ under-forecasting. Subplot (b) depicts the Tweedie compound Poisson-Gamma deviance gradient at zero demand for power parameter $p = 1.5$. As positive predictions $\mu$ approach zero, the unit deviance gradient diverges toward positive infinity ($\partial d/\partial \mu = 2/\sqrt{\mu} \to +\infty$), exerting an overpowering downward force that drives negative residual bias ($-11.87\%$ to $-18.04\%$) and starves replenishment buffers.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig6_inventory_dynamics.png}
+    \caption{Empirical inventory sawtooth dynamics and stockout avoidance under dynamic vs. static safety buffer policies.}
+    \label{fig:sawtooth}
+\end{figure}
+
+Figure~\ref{fig:sawtooth} illustrates the discrete-time inventory sawtooth dynamics comparing our proposed dynamic $(s, Q)$ policy against static baseline policies over 26 continuous operating weeks on Walmart Store 1. Under static safety buffers derived from total demand variance (Policy A), the warehouse carries an average of \$270.8k in redundant safety buffer capital. In contrast, under Policy C, safety buffers dynamically expand only when residual forecast error volatility rises, preventing stockouts during peak holiday demand while slashing average safety buffer capital to \$135.7k (a 49.9\% working capital liberation).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig7_policy_distributions.png}
+    \caption{Comparative policy distributions across Fill Rate, Stockout Days, and Cumulative Replenishment Operating Cost.}
+    \label{fig:distributions}
+\end{figure}
+
+Figure~\ref{fig:distributions} provides a quantitative multi-metric benchmark contrasting our proposed Policy C against three alternative replenishment policies across 8,000 simulated demand steps. Policy C slashes total inventory penalties from \$128,540 to \$9,210---a 92.9\% cost reduction.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig8_surge_roc.png}
+    \caption{Demand Surge Classifier Receiver Operating Characteristic (ROC) curve (AUC = 0.928) and Platt reliability calibration diagram.}
+    \label{fig:roc}
+\end{figure}
+
+Figure~\ref{fig:roc} evaluates the discriminative performance and reliability calibration of the proposed Demand Surge Early Warning Classifier on the locked holdout split. The Platt-calibrated LightGBM surge classifier achieves an Area Under the Curve (AUC-ROC) of 0.9278 with an overall classification accuracy of 83.21\%, substantially outperforming uncalibrated baseline models (AUC = 0.7260).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/fig9_telemetry_trajectory.png}
+    \caption{Real-time closed-loop replenishment telemetry trajectory demonstrating adaptive reorder point escalation during promotional surges.}
+    \label{fig:telemetry}
+\end{figure}
+
+Figure~\ref{fig:telemetry} tracks the live interaction dynamics of an enterprise SKU undergoing real-time closed-loop replenishment control across 20 operating weeks. When the surge classifier detects an impending promotional lift and demand doubles to 285 units, the engine immediately escalates the ROP band to 360 units, triggering proactive batch replenishment before on-hand inventory is depleted.
+
+\section{Conclusion}
+This paper presented an empirically audited, leakage-controlled Machine Learning Inventory Decision Support System that resolves the operational disconnect between statistical forecast accuracy and supply chain replenishment utility. We analytically derived and empirically confirmed that selecting models strictly by minimum point error (Policy B) often induces catastrophic stockouts due to negative bias distortions inherent in Log1p transformations and Tweedie deviance gradients. By introducing a Tri-Criterion Operational Model Selection Framework (Policy C) that enforces an operational percentage bias safeguard ($|\text{Bias}\,\%| \le 5.0\%$), our system eliminated 24 stockout days, achieved a 100.0\% cycle fill rate, reduced total inventory operating costs by 92.9\%, and liberated 49.9\% of safety buffer working capital via Eve's Law of Total Variance.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
