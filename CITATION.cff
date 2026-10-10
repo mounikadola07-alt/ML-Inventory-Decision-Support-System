@@ -1,0 +1,44 @@
+cff-version: 1.2.0
+message: "If you use this software or empirical framework in your research, please cite it as below."
+authors:
+  - family-names: "P."
+    given-names: "Sashank"
+    affiliation: "Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India"
+    email: "sashank.p@klh.edu.in"
+  - family-names: "Sai"
+    given-names: "Abhinay"
+    affiliation: "Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India"
+  - family-names: "Naidu"
+    given-names: "Poli"
+    affiliation: "Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India"
+  - family-names: "Dutta"
+    given-names: "Sushama Rani"
+    affiliation: "Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India"
+title: "An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support"
+version: 1.0.0
+date-released: 2026-10-10
+repository-code: "https://github.com/sashank321/ML-Inventory-Decision-Support-System"
+keywords:
+  - "demand forecasting"
+  - "inventory control"
+  - "continuous-review (s, Q)"
+  - "machine learning"
+  - "gradient boosting"
+  - "supply chain analytics"
+  - "operational bias safeguards"
+license: "MIT"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "P."
+      given-names: "Sashank"
+    - family-names: "Sai"
+      given-names: "Abhinay"
+    - family-names: "Naidu"
+      given-names: "Poli"
+    - family-names: "Dutta"
+      given-names: "Sushama Rani"
+  title: "An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support"
+  journal: "International Journal of Forecasting"
+  year: 2026
+  month: 10
