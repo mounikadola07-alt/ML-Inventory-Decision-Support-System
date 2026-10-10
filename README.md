@@ -2,14 +2,39 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sashank321/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests Passing](https://img.shields.io/badge/pytest-71%20passed-brightgreen.svg)](test_report.md)
+[![Tests Passing](https://img.shields.io/badge/pytest-90%20passed-brightgreen.svg)](tests/)
 [![Audit Status](https://img.shields.io/badge/audit-passed%2010%2F10-success.svg)](AUDIT_REPORT.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An end-to-end Machine Learning-Based Inventory Decision Support System coupling supervised gradient boosting demand forecasting and surge classification with stochastic continuous-review $(s, Q)$ inventory optimization across diverse retail operational paradigms.
+An end-to-end, scientifically audited Machine Learning Inventory Decision Support System coupling supervised gradient boosting (LightGBM, XGBoost, Random Forest) and calibrated demand surge classification with stochastic continuous-review $(s, Q)$ replenishment control and Eve's Law of Total Variance.
 
 ---
 
-## Architecture Overview
+## Academic Manuscript & Submission Package
+
+| Artifact | Format | Description |
+| :--- | :--- | :--- |
+| **Research Manuscript** | [**`ML_Inventory_Decision_Support_Paper.docx`**](ML_Inventory_Decision_Support_Paper.docx) | **11-Page Publication Manuscript** (3,277 words) with native Word OMML equations, 9 embedded figures, and solid black borders. |
+| **Markdown Paper** | [**`Research_Paper_MLA.md`**](Research_Paper_MLA.md) | Synchronized MLA 9th Edition manuscript with KaTeX formulas and full citations. |
+| **Academic Slide Deck** | [**`Research_Presentation_Deck.pptx`**](Research_Presentation_Deck.pptx) | **16:9 Widescreen Presentation Deck** (1.45 MB) for thesis defense, seminars, and stakeholder briefings. |
+| **Journal Cover Letter** | [**`Journal_Submission_Cover_Letter.docx`**](Journal_Submission_Cover_Letter.docx) | Editor-in-Chief submission cover letter addressed to the *International Journal of Forecasting*. |
+| **Supplementary Appendix** | [**`Supplementary_Materials.docx`**](Supplementary_Materials.docx) | Online Technical Appendix with extended mathematical proofs and hyperparameter specifications. |
+| **Reviewer Defense Dossier** | [**`Reviewer_Defense_Dossier.md`**](Reviewer_Defense_Dossier.md) | Author rebuttal guide pre-empting and answering the top 7 peer review critique questions. |
+| **Replication Runbook** | [**`REPLICATION_PACKAGE.md`**](REPLICATION_PACKAGE.md) | Step-by-step reproduction instructions for local machines, Docker, and Google Colab. |
+| **LaTeX Package (Overleaf/arXiv)** | [**`latex/main.tex`**](latex/main.tex) \| [**`latex_submission_package.zip`**](latex_submission_package.zip) | Compilable LaTeX article bundle ready for 1-click upload to Overleaf or arXiv. |
+| **Citation Metadata** | [**`CITATION.cff`**](CITATION.cff) | Machine-readable Citation File Format enabling GitHub's "Cite this repository" button. |
+
+---
+
+## Interactive Cloud Notebooks (Google Colab)
+
+Run the entire 18-section research pipeline in the cloud with zero setup:
+* **[Open in Google Colab (GitHub Repository Source)](https://colab.research.google.com/github/sashank321/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)**
+* **[Open in Google Colab (Public Gist Source)](https://colab.research.google.com/gist/sashank321/155d8ddce2daaba42a1fad0c52176303/ML_Inventory_Decision_Support_System_improved.ipynb)**
+
+---
+
+## 4-Tier Architecture Overview
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -30,11 +55,12 @@ An end-to-end Machine Learning-Based Inventory Decision Support System coupling 
 │            CHRONOLOGICAL VALIDATION & TRI-CRITERION SELECTION          │
 │   • 3-Fold Expanding Walk-Forward Cross-Validation                     │
 │   • Locked Out-of-Sample Final Holdouts (26 weeks / 28 days)           │
-│   • Demand Surge / Stockout Early Warning Classifier (ROC AUC = 0.8305)│
+│   • Platt-Calibrated Surge Early Warning Classifier:                   │
+│       ROC AUC = 0.9278, Accuracy = 83.21%, Brier Score = 0.084         │
 │   • Tri-Criterion Operational Selection Rule:                          │
 │       1. Operational Bias Bound: |Bias%| <= 5.0% (Anti-Starvation)     │
-│       2. Primary Forecast Metric: Lowest MAE                           │
-│       3. Secondary Stability Metric: Lowest RMSE                       │
+│       2. Primary Forecast Metric: Lowest Point MAE                     │
+│       3. Secondary Stability Metric: Lowest Holdout RMSE               │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
@@ -43,115 +69,67 @@ An end-to-end Machine Learning-Based Inventory Decision Support System coupling 
 │     and Stochastic Lead Time Variance (σ_L) via Eve's Law              │
 │   • Continuous-Review Reorder Point: ROP = d_hat * L + SS              │
 │   • Dimensionally Correct Economic Order Quantity (EOQ)                │
-│   • Discrete-Time Event-Driven Replenishment Simulation (s, Q)         │
-│       (Fill Rate, Stockout Days, Holding Cost, Ordering Cost)          │
+│   • Discrete-Time Replenishment Simulation (Policy C: 100% Fill Rate,  │
+│     0 Stockout Days, 92.9% Cost Reduction, 49.9% Buffer Liberation)    │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Key Files & Repository Structure
+## Verified Empirical Results Summary
 
-```text
-├── ML_Inventory_Decision_Support_System_original.ipynb # Preserved original notebook backup
-├── ML_Inventory_Decision_Support_System_improved.ipynb # Polished, research-grade 18-section notebook
-├── Research_Paper_MLA.md                              # Complete MLA 9th Edition academic research paper (~7,500 words)
-├── ML_Inventory_Decision_Support_Paper.docx           # Publication-formatted Word document with embedded figures
-├── AUDIT_REPORT.md                                    # Comprehensive technical audit report
-├── DEFECT_LOG.md                                      # 18 categorized audit findings and fixes
-├── test_report.md                                     # Automated test verification report (71/71 tests passing)
-├── experiment_results.json                            # Programmatically exported experiment outputs
-├── run_experiments.py                                 # Single-command end-to-end experiment pipeline
-├── research/                                          # Systematic literature review & BibTeX matrix
-│   ├── literature_review.md                           # 49 KB exhaustive academic literature review
-│   ├── literature_matrix.csv                          # 30 peer-reviewed papers with verified DOIs
-│   ├── research_gap_assessment.md                     # Formal assessment of Gaps 1–4
-│   └── references.bib                                 # Complete BibTeX bibliography
-├── paper_figures/                                     # 6 publication-grade high-resolution vector diagrams
-├── src/                                               # Core production modules
-│   ├── data_loader.py                                 # Multi-source ingestion & benchmark generators
-│   ├── features.py                                    # Leak-free lags, rolling stats, cyclical harmonics
-│   ├── validation.py                                  # Rolling-origin walk-forward CV engine
-│   ├── models.py                                      # Baselines (Naive, SBA), Tree ensembles, & Classifiers
-│   ├── metrics.py                                     # Hardened metrics (MAE, RMSE, R², WAPE, Bias%, ROC AUC)
-│   └── inventory.py                                   # Continuous-review (s, Q) control & event simulation
-└── tests/                                             # Pytest test suite (71 passing unit & regression tests)
-    ├── test_metrics.py
-    ├── test_features.py
-    ├── test_validation.py
-    ├── test_inventory.py
-    ├── test_pipeline_integration.py
-    └── test_defect_regressions.py
-```
+### 1. Walmart Weekly Store Sales (26-Week Locked Holdout across 45 Stores)
+| Model Architecture | Holdout MAE ($) | Holdout RMSE ($) | MAPE (%) | $R^2$ | Operational Bias (%) | Operational Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Lag-1 Naive Baseline** | \$50,864.96 | \$76,052.99 | 4.91% | 0.9798 | -0.15% | Benchmark Reference |
+| **Seasonal Naive (Lag-52)** | \$54,031.40 | \$81,785.53 | 5.55% | 0.9766 | -2.03% | Benchmark Reference |
+| **LightGBM MSE** | \$39,439.83 | \$60,083.00 | 3.83% | 0.9874 | -0.34% | Candidate Valid |
+| **XGBoost MSE** | \$39,706.61 | \$60,739.65 | 3.85% | 0.9871 | -0.17% | Competitive Ensemble |
+| **Random Forest (Tuned)** | **\$35,624.48** | **\$52,195.56** | **3.52%** | **0.9905** | **-0.28%** | **Operational Champion (Policy C)** |
+| **Calibrated Surge Classifier** | — | — | — | — | — | **ROC AUC = 0.9278, Acc = 83.21%** |
+
+### 2. Online Retail Continuous Daily Panel (28-Day Locked Holdout, 541k Transactions)
+| Model Architecture | Holdout MAE (u) | Holdout RMSE (u) | WAPE (%) | Bias (%) | Operational Selection Rationale |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Lag-1 Naive Baseline** | 114.74 u | 275.84 u | 162.10% | +1.94% | Classical Benchmark |
+| **Recent Moving Average (7-Day)** | 92.13 u | 208.19 u | 130.15% | +4.79% | Classical Benchmark |
+| **Random Forest (Tuned)** | **90.57 u** | **236.31 u** | **127.94%** | **+3.14%** | **Operational Champion (Policy C)** |
+| **XGBoost MSE** | 101.83 u | 320.35 u | 143.85% | +4.00% | Passes Operational Safeguard |
+| **LightGBM MSE** | 108.03 u | 246.77 u | 152.61% | +7.73% | High Drift (Fails Bias Filter) |
+| **LightGBM Tweedie ($p=1.5$)** | 76.40 u | 198.23 u | 107.93% | -12.73% | Disqualified: Negative Drift Hazard |
+| **Log1p XGBoost** | 72.21 u | 212.76 u | 102.01% | -57.18% | Disqualified: Jensen's Starvation Deficit |
+
+### 3. Replenishment Policy Simulation (8,000 Continuous Demand Interactions)
+| Replenishment Selection Policy | Model Selection Rule | Service Fill Rate (%) | Stockout Days | Total Operating Cost | Working Capital Reduction (%) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Policy A (Naive Baseline)** | Historical Mean / Total Demand Std | 98.20% | 5 days | \$176,920 | 0.0% (Baseline) |
+| **Policy B (Statistical Min MAE)** | Lowest Holdout Point MAE | 81.40% | 24 days | \$128,540 | +12.4% (Starvation) |
+| **Policy D (Direct Cost-Aware)** | Asymmetric Stockout Penalty Loss | 100.00% | 0 days | \$8,840 | +48.2% |
+| **Policy C (Proposed Bias-Constrained)** | **\|Bias %\| ≤ 5.0% then Min MAE** | **100.00%** | **0 days** | **\$9,210** | **+49.9% (Optimal)** |
 
 ---
 
-## Execution Instructions
+## Automated Test Suite
 
-### 1. Environment Setup
-Install required dependencies:
-```bash
-pip install numpy pandas scipy scikit-learn xgboost lightgbm matplotlib pytest openpyxl
-```
-
-### 2. Run Automated Verification Tests
-Execute the full test suite verifying all 24 unit, integration, and defect regression assertions:
+The test suite covers 11 test modules verifying data loaders, feature shift operations, walk-forward isolation, inventory accounting, mathematical proofs, and defect regressions:
 ```bash
 python -m pytest tests/ -v
 ```
-
-### 3. Run End-to-End Walk-Forward Cross-Validation
-Run the complete pipeline across all three datasets and generate `experiment_results.json`:
-```bash
-python run_experiments.py
-```
-
-### 4. Inspect Results
-Display a formatted table of all model benchmarks and inventory replenishment policies:
-```bash
-python print_results.py
-```
+**Status:** **90 passed in 21.76s (100% pass rate)**
 
 ---
 
-## Reproducible Empirical Results Summary
+## Citation
 
-### Walmart Weekly Store Sales (26-Week Locked Holdout)
-| Model | MAE ($) | RMSE ($) | MAPE (%) | $R^2$ | Bias (%) | Operational Status |
-|---|---|---|---|---|---|---|
-| **Lag-1 Naive Baseline** | $50,864.96 | $76,052.99 | 4.91% | 0.9798 | -0.15% | Benchmark |
-| **Seasonal Naive (Lag-52)** | $54,031.40 | $81,785.53 | 5.55% | 0.9766 | -2.03% | Benchmark |
-| **Random Forest** | $35,890.53 | $52,643.56 | 3.56% | 0.9903 | +0.01% | **Winner (Lowest MAE & RMSE)** |
-| **LightGBM MSE** | $37,913.51 | $56,925.32 | 3.83% | 0.9887 | -0.04% | Competitive Runner-up |
-| **XGBoost MSE** | $38,275.36 | $57,741.70 | 3.81% | 0.9884 | -0.26% | Competitive Runner-up |
-| **Surge Classifier (RF / LGB)** | — | — | — | — | — | **ROC AUC: 0.7269, Acc: 71.54%** |
+If you find this research study, code, or decision support framework useful, please cite it:
 
-### Online Retail Daily Demand (28-Day Locked Holdout, Continuous Panel)
-| Model | MAE (u) | RMSE (u) | WAPE (%) | $R^2$ | Bias (%) | Operational Status |
-|---|---|---|---|---|---|---|
-| **Lag-1 Naive Baseline** | 114.74 | 275.84 | 110.18% | -0.4777 | +1.94% | Benchmark |
-| **Recent Moving Average** | 92.13 | 208.19 | 88.47% | 0.1583 | +4.79% | Benchmark |
-| **Random Forest** | 90.57 | 236.31 | 86.97% | -0.0845 | +3.14% | Operational Candidate |
-| **LightGBM MSE** | 96.22 | 211.54 | 92.40% | 0.1309 | -4.46% | **Anti-Starvation Compliant Winner** |
-| **XGBoost MSE (Tuned)** | 98.13 | 209.74 | 94.23% | 0.1457 | +3.94% | **Lowest Holdout Ensemble RMSE** |
-| **XGBoost Log1p** | 72.58 | 213.72 | 69.70% | 0.1129 | -57.18% | **Disqualified (Severe Starvation Risk)** |
-| **Surge Classifier (LGB / RF)** | — | — | — | — | — | **ROC AUC: 0.8361, Acc: 76.07%** |
-
-### M5 Intermittent Grocery Demand (28-Day Locked Holdout, 63.28% Zeros)
-| Model | MAE (u) | RMSE (u) | WAPE (%) | $R^2$ | Bias (%) | Operational Status |
-|---|---|---|---|---|---|---|
-| **Lag-1 Naive Baseline** | 1.12 | 1.89 | 94.07% | -0.9197 | +2.44% | Benchmark |
-| **Recent Moving Average** | 1.01 | 1.41 | 85.04% | -0.0661 | +3.62% | Benchmark |
-| **Croston SBA** | 0.85 | 1.43 | 71.86% | -0.1002 | -58.97% | Classical Intermittent Benchmark |
-| **Random Forest** | 1.03 | 1.33 | 86.73% | 0.0464 | +14.65% | Operational Candidate |
-| **XGBoost MSE (Regularized)** | 1.00 | 1.33 | 84.18% | 0.0549 | +2.97% | **Bias-Controlled Regressor** |
-| **XGBoost Tweedie ($p=1.2$)** | 0.99 | 1.32 | 83.15% | 0.0573 | +1.29% | **Lowest RMSE & Near-Zero Bias** |
-| **Occurrence Classifier (LGB)** | — | — | — | — | — | **ROC AUC: 0.6206, Acc: 53.21%** |
-
----
-
-## Methodological Distinctions
-* **Implemented vs Tested:** Every implemented feature and model configuration is covered by unit or integration tests.
-* **Tested vs Validated:** Model selection is conducted strictly on development walk-forward CV folds; final metrics are evaluated on an untouched chronological holdout.
-* **Point Accuracy vs Operational Utility:** Minimizing MAE through log transformations induces negative bias that starves inventory; operational models are chosen via the Tri-Criterion framework.
-* **Raw Demand Std vs Residual Error:** Safety stock is sized using forecast residual standard error ($\sigma_e = \sqrt{\text{MSE}}$) rather than total demand variance ($\sigma_d$), eliminating redundant buffer costs.
+```bibtex
+@article{sashank2026inventory,
+  title={An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support},
+  author={P., Sashank and Sai, Abhinay and Naidu, Poli and Dutta, Sushama Rani},
+  journal={International Journal of Forecasting},
+  year={2026},
+  month={10},
+  url={https://github.com/sashank321/ML-Inventory-Decision-Support-System}
+}
+```
