@@ -2,7 +2,7 @@
 
 **Project Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
 **Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
-**Audit Timestamp:** 2026-10-10 04:16:34 UTC  
+**Audit Timestamp:** 2026-10-10 04:20:10 UTC  
 **Certification Status:** **100% COMPLIANT & VERIFIED**  
 
 ---
@@ -38,7 +38,7 @@ Every research asset, manuscript, code module, and presentation deck has been cr
 | `Journal_Submission_Cover_Letter.docx` | **VERIFIED** | 38.0 KB | `eed0c98beec92e456b4ebbf31dd4...` |
 | `HIGHLIGHTS.md` | **VERIFIED** | 2.4 KB | `289a0c67dd02db54a43330c9f494...` |
 | `SUBMISSION_CHECKLIST.md` | **VERIFIED** | 2.0 KB | `ca0475d465a4a90579babb7cba8a...` |
-| `Supplementary_Materials.docx` | **VERIFIED** | 39.2 KB | `b01a1b2fe53c06aa2d8dc23d4a3d...` |
+| `Supplementary_Materials.docx` | **VERIFIED** | 347.0 KB | `08bfaf9872880c781cf5a582adf1...` |
 | `Reviewer_Defense_Dossier.md` | **VERIFIED** | 10.1 KB | `b170a43b47452de7ce7659df770e...` |
 | `REPLICATION_PACKAGE.md` | **VERIFIED** | 3.1 KB | `44b2db3dcc1bde59f1a9cc79c7c2...` |
 | `CITATION.cff` | **VERIFIED** | 1.8 KB | `e9e0cb91664b56741f998015858c...` |
