@@ -156,6 +156,7 @@ def create_lightgbm_regressor(
     learning_rate: float = 0.05,
     n_estimators: int = 150,
     num_leaves: int = 31,
+    max_depth: int = -1,
     min_child_samples: int = 20,
     subsample: float = 0.85,
     colsample_bytree: float = 0.85,
@@ -166,6 +167,7 @@ def create_lightgbm_regressor(
     kwargs = {
         "n_estimators": n_estimators,
         "num_leaves": num_leaves,
+        "max_depth": max_depth,
         "min_child_samples": min_child_samples,
         "learning_rate": learning_rate,
         "subsample": subsample,
@@ -185,8 +187,9 @@ def create_lightgbm_regressor(
 
 
 def create_random_forest_classifier(
-    n_estimators: int = 100,
-    max_depth: Optional[int] = 8,
+    n_estimators: int = 150,
+    max_depth: Optional[int] = 10,
+    min_samples_leaf: int = 2,
     class_weight: Optional[str] = "balanced",
     random_state: int = 42
 ) -> RandomForestClassifier:
@@ -194,7 +197,7 @@ def create_random_forest_classifier(
     return RandomForestClassifier(
         n_estimators=n_estimators,
         max_depth=max_depth,
-        min_samples_leaf=3,
+        min_samples_leaf=min_samples_leaf,
         class_weight=class_weight,
         max_features="sqrt",
         random_state=random_state,
@@ -203,12 +206,12 @@ def create_random_forest_classifier(
 
 
 def create_xgboost_classifier(
-    n_estimators: int = 100,
-    max_depth: int = 4,
+    n_estimators: int = 120,
+    max_depth: int = 3,
     learning_rate: float = 0.03,
     subsample: float = 0.85,
     colsample_bytree: float = 0.85,
-    reg_alpha: float = 0.5,
+    reg_alpha: float = 1.0,
     reg_lambda: float = 2.0,
     scale_pos_weight: float = 1.0,
     random_state: int = 42
@@ -230,8 +233,8 @@ def create_xgboost_classifier(
 
 
 def create_lightgbm_classifier(
-    n_estimators: int = 100,
-    num_leaves: int = 15,
+    n_estimators: int = 120,
+    num_leaves: int = 20,
     max_depth: int = 4,
     learning_rate: float = 0.03,
     min_child_samples: int = 20,
@@ -258,4 +261,5 @@ def create_lightgbm_classifier(
         n_jobs=-1,
         verbose=-1
     )
+
 

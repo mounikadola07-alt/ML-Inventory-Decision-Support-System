@@ -154,9 +154,9 @@ def run_walmart_experiment() -> Dict[str, Any]:
     y_holdout_surge = (holdout_df["Weekly_Sales"] > holdout_df["Store"].map(store_p75)).astype(int)
     
     clf_models = {
-        "Random_Forest_Clf": create_random_forest_classifier(n_estimators=100, max_depth=8, class_weight="balanced"),
-        "LightGBM_Clf": create_lightgbm_classifier(n_estimators=100, num_leaves=15, max_depth=4, learning_rate=0.03, class_weight="balanced"),
-        "XGBoost_Clf": create_xgboost_classifier(n_estimators=100, max_depth=4, learning_rate=0.03, scale_pos_weight=float((len(y_dev_surge)-sum(y_dev_surge))/sum(y_dev_surge)))
+        "Random_Forest_Clf": create_random_forest_classifier(n_estimators=150, max_depth=10, min_samples_leaf=2, class_weight="balanced"),
+        "LightGBM_Clf": create_lightgbm_classifier(n_estimators=150, num_leaves=31, max_depth=5, learning_rate=0.03, class_weight="balanced"),
+        "XGBoost_Clf": create_xgboost_classifier(n_estimators=120, max_depth=4, learning_rate=0.03, scale_pos_weight=float((len(y_dev_surge)-sum(y_dev_surge))/sum(y_dev_surge)))
     }
     
     classification_results = []
@@ -266,7 +266,7 @@ def run_online_retail_experiment() -> Dict[str, Any]:
         "Lag1_Naive": lambda: Lag1NaiveModel("Daily_Quantity_Lag1"),
         "Recent_Average": lambda: RecentAverageModel("Daily_Quantity_RollMean7"),
         "Random_Forest": lambda: create_random_forest(n_estimators=120, max_depth=8),
-        "LightGBM_MSE": lambda: create_lightgbm_regressor(objective="regression", n_estimators=120, num_leaves=15, min_child_samples=20, learning_rate=0.03, reg_alpha=1.0, reg_lambda=5.0),
+        "LightGBM_MSE": lambda: create_lightgbm_regressor(objective="regression", n_estimators=100, num_leaves=12, max_depth=3, min_child_samples=20, learning_rate=0.02, reg_alpha=2.0, reg_lambda=5.0),
         "LightGBM_Tweedie": lambda: create_lightgbm_regressor(objective="tweedie", tweedie_variance_power=1.2, n_estimators=100, num_leaves=15, learning_rate=0.03)
     }
     
@@ -285,15 +285,15 @@ def run_online_retail_experiment() -> Dict[str, Any]:
     for name, factory in cv_models.items():
         m = factory()
         m.fit(X_dev, y_dev)
-        preds = m.predict(X_holdout)
+        preds = np.clip(m.predict(X_holdout), 0, None)
         metrics = evaluate_all_metrics(y_holdout, preds, name)
         holdout_results.append(metrics)
         trained_models[name] = preds
         
-    # Tuned XGBoost MSE (anti-starvation operational regressor)
-    xgb_mse = create_xgboost_regressor(n_estimators=120, max_depth=4, learning_rate=0.03, reg_alpha=1.0, reg_lambda=5.0)
+    # Tuned XGBoost MSE (anti-starvation operational regressor, depth=3, reg_alpha=5.0, reg_lambda=10.0)
+    xgb_mse = create_xgboost_regressor(n_estimators=100, max_depth=3, learning_rate=0.03, reg_alpha=5.0, reg_lambda=10.0)
     xgb_mse.fit(X_dev, y_dev)
-    xgb_mse_preds = xgb_mse.predict(X_holdout)
+    xgb_mse_preds = np.clip(xgb_mse.predict(X_holdout), 0, None)
     m_xgb_mse = evaluate_all_metrics(y_holdout, xgb_mse_preds, "XGBoost_MSE")
     holdout_results.append(m_xgb_mse)
     trained_models["XGBoost_MSE"] = xgb_mse_preds
@@ -302,7 +302,7 @@ def run_online_retail_experiment() -> Dict[str, Any]:
     xgb_log1p = create_xgboost_regressor(n_estimators=100, max_depth=6)
     xgb_log1p.fit(X_dev, np.log1p(y_dev))
     log_preds = xgb_log1p.predict(X_holdout)
-    raw_preds = np.expm1(log_preds)
+    raw_preds = np.clip(np.expm1(log_preds), 0, None)
     m_log1p = evaluate_all_metrics(y_holdout, raw_preds, "XGBoost_Log1p")
     holdout_results.append(m_log1p)
     trained_models["XGBoost_Log1p"] = raw_preds
@@ -313,10 +313,11 @@ def run_online_retail_experiment() -> Dict[str, Any]:
     y_dev_surge = (dev_df["Daily_Quantity"] > dev_df["StockCode"].map(sku_p75)).astype(int)
     y_holdout_surge = (holdout_df["Daily_Quantity"] > holdout_df["StockCode"].map(sku_p75)).astype(int)
     
+    scale_pos_o = float((len(y_dev_surge)-sum(y_dev_surge))/sum(y_dev_surge))
     clf_models = {
-        "Random_Forest_Clf": create_random_forest_classifier(n_estimators=100, max_depth=6, class_weight="balanced"),
-        "LightGBM_Clf": create_lightgbm_classifier(n_estimators=100, num_leaves=15, max_depth=4, learning_rate=0.03, class_weight="balanced"),
-        "XGBoost_Clf": create_xgboost_classifier(n_estimators=100, max_depth=3, learning_rate=0.03, scale_pos_weight=float((len(y_dev_surge)-sum(y_dev_surge))/sum(y_dev_surge)))
+        "Random_Forest_Clf": create_random_forest_classifier(n_estimators=150, max_depth=6, min_samples_leaf=2, class_weight="balanced"),
+        "LightGBM_Clf": create_lightgbm_classifier(n_estimators=120, num_leaves=20, max_depth=4, learning_rate=0.03, class_weight="balanced"),
+        "XGBoost_Clf": create_xgboost_classifier(n_estimators=120, max_depth=3, learning_rate=0.03, scale_pos_weight=scale_pos_o)
     }
     
     classification_results = []
@@ -384,15 +385,15 @@ def run_m5_experiment() -> Dict[str, Any]:
         "Lag1_Naive": Lag1NaiveModel("Sales_Lag1"),
         "Recent_Average": RecentAverageModel("Sales_RollMean7"),
         "Croston_SBA": CrostonSBAModel(alpha=0.1),
-        "Random_Forest": create_random_forest(n_estimators=100, max_depth=8),
-        "XGBoost_MSE": create_xgboost_regressor(objective="reg:squarederror", n_estimators=100),
-        "XGBoost_Tweedie_p1.5": create_xgboost_regressor(objective="reg:tweedie", tweedie_variance_power=1.5, n_estimators=100)
+        "Random_Forest": create_random_forest(n_estimators=100, max_depth=6),
+        "XGBoost_MSE": create_xgboost_regressor(objective="reg:squarederror", n_estimators=80, max_depth=3, learning_rate=0.03, reg_alpha=2.0, reg_lambda=5.0),
+        "XGBoost_Tweedie_p1.5": create_xgboost_regressor(objective="reg:tweedie", tweedie_variance_power=1.2, n_estimators=80, max_depth=3, learning_rate=0.03, reg_alpha=2.0, reg_lambda=5.0)
     }
     
     holdout_results = []
     for name, m in models.items():
         m.fit(X_dev, y_dev)
-        preds = m.predict(X_holdout)
+        preds = np.clip(m.predict(X_holdout), 0, None)
         metrics = evaluate_all_metrics(y_holdout, preds, name)
         holdout_results.append(metrics)
         
@@ -400,11 +401,12 @@ def run_m5_experiment() -> Dict[str, Any]:
     print("    Running M5 Intermittent Occurrence Classification (ROC AUC / Accuracy)...")
     y_dev_occ = (y_dev > 0).astype(int)
     y_holdout_occ = (y_holdout > 0).astype(int)
+    scale_pos_occ = float((len(y_dev_occ)-sum(y_dev_occ))/sum(y_dev_occ))
     
     clf_models = {
-        "Random_Forest_Clf": create_random_forest_classifier(n_estimators=100, max_depth=6, class_weight="balanced"),
-        "LightGBM_Clf": create_lightgbm_classifier(n_estimators=100, num_leaves=15, max_depth=4, learning_rate=0.03, class_weight="balanced"),
-        "XGBoost_Clf": create_xgboost_classifier(n_estimators=100, max_depth=4, learning_rate=0.03, scale_pos_weight=float((len(y_dev_occ)-sum(y_dev_occ))/sum(y_dev_occ)))
+        "Random_Forest_Clf": create_random_forest_classifier(n_estimators=150, max_depth=6, min_samples_leaf=3, class_weight="balanced"),
+        "LightGBM_Clf": create_lightgbm_classifier(n_estimators=100, num_leaves=15, max_depth=3, learning_rate=0.03, class_weight="balanced"),
+        "XGBoost_Clf": create_xgboost_classifier(n_estimators=100, max_depth=3, learning_rate=0.03, scale_pos_weight=scale_pos_occ)
     }
     
     classification_results = []

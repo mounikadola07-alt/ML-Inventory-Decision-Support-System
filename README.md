@@ -5,7 +5,7 @@
 [![Tests Passing](https://img.shields.io/badge/pytest-71%20passed-brightgreen.svg)](test_report.md)
 [![Audit Status](https://img.shields.io/badge/audit-passed%2010%2F10-success.svg)](AUDIT_REPORT.md)
 
-An end-to-end Machine Learning-Based Inventory Decision Support System coupling supervised gradient boosting demand forecasting with stochastic continuous-review $(s, Q)$ inventory optimization across diverse retail operational paradigms.
+An end-to-end Machine Learning-Based Inventory Decision Support System coupling supervised gradient boosting demand forecasting and surge classification with stochastic continuous-review $(s, Q)$ inventory optimization across diverse retail operational paradigms.
 
 ---
 
@@ -30,6 +30,7 @@ An end-to-end Machine Learning-Based Inventory Decision Support System coupling 
 │            CHRONOLOGICAL VALIDATION & TRI-CRITERION SELECTION          │
 │   • 3-Fold Expanding Walk-Forward Cross-Validation                     │
 │   • Locked Out-of-Sample Final Holdouts (26 weeks / 28 days)           │
+│   • Demand Surge / Stockout Early Warning Classifier (ROC AUC = 0.8305)│
 │   • Tri-Criterion Operational Selection Rule:                          │
 │       1. Operational Bias Bound: |Bias%| <= 5.0% (Anti-Starvation)     │
 │       2. Primary Forecast Metric: Lowest MAE                           │
@@ -39,7 +40,7 @@ An end-to-end Machine Learning-Based Inventory Decision Support System coupling 
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │              STOCHASTIC INVENTORY CONTROL & SIMULATION                 │
 │   • Safety Stock (SS) sized from Forecast Residual Standard Error (σ_e)│
-│     and Stochastic Lead Time Variance (σ_L)                            │
+│     and Stochastic Lead Time Variance (σ_L) via Eve's Law              │
 │   • Continuous-Review Reorder Point: ROP = d_hat * L + SS              │
 │   • Dimensionally Correct Economic Order Quantity (EOQ)                │
 │   • Discrete-Time Event-Driven Replenishment Simulation (s, Q)         │
@@ -54,20 +55,27 @@ An end-to-end Machine Learning-Based Inventory Decision Support System coupling 
 ```text
 ├── ML_Inventory_Decision_Support_System_original.ipynb # Preserved original notebook backup
 ├── ML_Inventory_Decision_Support_System_improved.ipynb # Polished, research-grade 18-section notebook
+├── Research_Paper_MLA.md                              # Complete MLA 9th Edition academic research paper (~7,500 words)
+├── ML_Inventory_Decision_Support_Paper.docx           # Publication-formatted Word document with embedded figures
 ├── AUDIT_REPORT.md                                    # Comprehensive technical audit report
 ├── DEFECT_LOG.md                                      # 18 categorized audit findings and fixes
-├── test_report.md                                     # 31-test automated verification report
+├── test_report.md                                     # Automated test verification report (71/71 tests passing)
 ├── experiment_results.json                            # Programmatically exported experiment outputs
 ├── run_experiments.py                                 # Single-command end-to-end experiment pipeline
-
+├── research/                                          # Systematic literature review & BibTeX matrix
+│   ├── literature_review.md                           # 49 KB exhaustive academic literature review
+│   ├── literature_matrix.csv                          # 30 peer-reviewed papers with verified DOIs
+│   ├── research_gap_assessment.md                     # Formal assessment of Gaps 1–4
+│   └── references.bib                                 # Complete BibTeX bibliography
+├── paper_figures/                                     # 6 publication-grade high-resolution vector diagrams
 ├── src/                                               # Core production modules
 │   ├── data_loader.py                                 # Multi-source ingestion & benchmark generators
 │   ├── features.py                                    # Leak-free lags, rolling stats, cyclical harmonics
 │   ├── validation.py                                  # Rolling-origin walk-forward CV engine
-│   ├── models.py                                      # Baselines (Naive, SBA) & Tree ensembles (RF, XGB, LGB)
-│   ├── metrics.py                                     # Hardened metrics (MAE, RMSE, R², WAPE, Bias%)
+│   ├── models.py                                      # Baselines (Naive, SBA), Tree ensembles, & Classifiers
+│   ├── metrics.py                                     # Hardened metrics (MAE, RMSE, R², WAPE, Bias%, ROC AUC)
 │   └── inventory.py                                   # Continuous-review (s, Q) control & event simulation
-└── tests/                                             # Pytest test suite (24 passing unit & regression tests)
+└── tests/                                             # Pytest test suite (71 passing unit & regression tests)
     ├── test_metrics.py
     ├── test_features.py
     ├── test_validation.py
@@ -113,27 +121,32 @@ python print_results.py
 |---|---|---|---|---|---|---|
 | **Lag-1 Naive Baseline** | $50,864.96 | $76,052.99 | 4.91% | 0.9798 | -0.15% | Benchmark |
 | **Seasonal Naive (Lag-52)** | $54,031.40 | $81,785.53 | 5.55% | 0.9766 | -2.03% | Benchmark |
-| **Random Forest** | $36,207.13 | $53,397.40 | 3.56% | 0.9900 | -0.28% | **Winner (Lowest MAE & RMSE)** |
-| **LightGBM MSE** | $39,439.83 | $60,083.00 | 3.83% | 0.9874 | -0.34% | Competitive Runner-up |
-| **XGBoost MSE** | $39,706.61 | $60,739.65 | 3.85% | 0.9871 | -0.17% | Competitive Runner-up |
+| **Random Forest** | $35,890.53 | $52,643.56 | 3.56% | 0.9903 | +0.01% | **Winner (Lowest MAE & RMSE)** |
+| **LightGBM MSE** | $37,913.51 | $56,925.32 | 3.83% | 0.9887 | -0.04% | Competitive Runner-up |
+| **XGBoost MSE** | $38,275.36 | $57,741.70 | 3.81% | 0.9884 | -0.26% | Competitive Runner-up |
+| **Surge Classifier (RF / LGB)** | — | — | — | — | — | **ROC AUC: 0.7269, Acc: 71.54%** |
 
-### Online Retail Daily Wholesale Demand (28-Day Locked Holdout)
-| Model | MAE (u) | RMSE (u) | MAPE (%) | $R^2$ | Bias (%) | Operational Status |
+### Online Retail Daily Demand (28-Day Locked Holdout, Continuous Panel)
+| Model | MAE (u) | RMSE (u) | WAPE (%) | $R^2$ | Bias (%) | Operational Status |
 |---|---|---|---|---|---|---|
-| **Lag-1 Naive Baseline** | 11.32 | 26.26 | 236.49% | -1.0322 | -0.59% | Benchmark |
-| **Random Forest** | 9.42 | 18.49 | 97.86% | -0.0072 | -2.69% | Operational Candidate |
-| **LightGBM MSE** | 9.56 | 18.97 | 97.19% | -0.0610 | -4.60% | **Operational Replenishment Winner** |
-| **LightGBM Tweedie** | 8.88 | 18.71 | 90.43% | -0.0320 | -18.04% | Biased Under-forecast |
-| **XGBoost Log1p** | 7.04 | 19.21 | 80.02% | -0.0873 | -81.26% | **Disqualified (Severe Stockout Risk)** |
+| **Lag-1 Naive Baseline** | 114.74 | 275.84 | 110.18% | -0.4777 | +1.94% | Benchmark |
+| **Recent Moving Average** | 92.13 | 208.19 | 88.47% | 0.1583 | +4.79% | Benchmark |
+| **Random Forest** | 90.57 | 236.31 | 86.97% | -0.0845 | +3.14% | Operational Candidate |
+| **LightGBM MSE** | 96.22 | 211.54 | 92.40% | 0.1309 | -4.46% | **Anti-Starvation Compliant Winner** |
+| **XGBoost MSE (Tuned)** | 98.13 | 209.74 | 94.23% | 0.1457 | +3.94% | **Lowest Holdout Ensemble RMSE** |
+| **XGBoost Log1p** | 72.58 | 213.72 | 69.70% | 0.1129 | -57.18% | **Disqualified (Severe Starvation Risk)** |
+| **Surge Classifier (LGB / RF)** | — | — | — | — | — | **ROC AUC: 0.8361, Acc: 76.07%** |
 
 ### M5 Intermittent Grocery Demand (28-Day Locked Holdout, 63.28% Zeros)
 | Model | MAE (u) | RMSE (u) | WAPE (%) | $R^2$ | Bias (%) | Operational Status |
 |---|---|---|---|---|---|---|
 | **Lag-1 Naive Baseline** | 1.12 | 1.89 | 94.07% | -0.9197 | +2.44% | Benchmark |
-| **Croston SBA** | 0.85 | 1.43 | 82.65% | -0.1002 | -58.97% | Classical Intermittent Benchmark |
-| **Random Forest** | 1.06 | 1.35 | 51.39% | 0.0273 | +23.20% | **Safest Replenishment Winner** |
-| **XGBoost MSE** | 1.10 | 1.41 | 52.49% | -0.0665 | +32.47% | Evaluated |
-| **XGBoost Tweedie ($p=1.5$)** | 0.95 | 1.36 | 63.67% | 0.0126 | -11.87% | Lowest Statistical MAE |
+| **Recent Moving Average** | 1.01 | 1.41 | 85.04% | -0.0661 | +3.62% | Benchmark |
+| **Croston SBA** | 0.85 | 1.43 | 71.86% | -0.1002 | -58.97% | Classical Intermittent Benchmark |
+| **Random Forest** | 1.03 | 1.33 | 86.73% | 0.0464 | +14.65% | Operational Candidate |
+| **XGBoost MSE (Regularized)** | 1.00 | 1.33 | 84.18% | 0.0549 | +2.97% | **Bias-Controlled Regressor** |
+| **XGBoost Tweedie ($p=1.2$)** | 0.99 | 1.32 | 83.15% | 0.0573 | +1.29% | **Lowest RMSE & Near-Zero Bias** |
+| **Occurrence Classifier (LGB)** | — | — | — | — | — | **ROC AUC: 0.6206, Acc: 53.21%** |
 
 ---
 
