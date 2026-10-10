@@ -7,7 +7,7 @@ and reproducible walk-forward cross-validation.
 import numpy as np
 import pandas as pd
 from typing import List, Tuple, Generator, Dict, Any, Callable
-from src.metrics import evaluate_all_metrics
+from src.metrics import evaluate_all_metrics, evaluate_classification_metrics
 
 
 class ChronologicalTimeSeriesSplit:
@@ -130,3 +130,52 @@ def run_walk_forward_cv(
         "Fold_Details": fold_metrics
     }
     return summary
+
+
+def run_walk_forward_classification_cv(
+    df: pd.DataFrame,
+    feature_cols: List[str],
+    target_col: str,
+    time_col: str,
+    model_factory: Callable[[], Any],
+    cv_splitter: ChronologicalTimeSeriesSplit,
+    threshold: float = 0.5,
+    model_name: str = "Classifier"
+) -> Dict[str, Any]:
+    """
+    Evaluates a classification model architecture across expanding walk-forward CV folds.
+    Returns aggregated ROC AUC, PR AUC, Accuracy, F1, and fold details.
+    """
+    fold_metrics = []
+
+    for fold_num, (tr_idx, val_idx) in enumerate(cv_splitter.split(df, time_col), start=1):
+        X_tr = df.loc[tr_idx, feature_cols]
+        y_tr = df.loc[tr_idx, target_col]
+        X_val = df.loc[val_idx, feature_cols]
+        y_val = df.loc[val_idx, target_col]
+
+        model = model_factory()
+        model.fit(X_tr, y_tr)
+
+        probs = model.predict_proba(X_val)[:, 1]
+        m = evaluate_classification_metrics(
+            y_val, probs, threshold=threshold, model_name=f"{model_name}_Fold_{fold_num}"
+        )
+        m["Fold"] = fold_num
+        fold_metrics.append(m)
+
+    df_folds = pd.DataFrame(fold_metrics)
+    summary = {
+        "Model": model_name,
+        "CV_ROC_AUC_Mean": float(df_folds["ROC_AUC"].mean()),
+        "CV_ROC_AUC_Std": float(df_folds["ROC_AUC"].std()),
+        "CV_PR_AUC_Mean": float(df_folds["PR_AUC"].mean()),
+        "CV_PR_AUC_Std": float(df_folds["PR_AUC"].std()),
+        "CV_Accuracy_Mean": float(df_folds["Accuracy"].mean()),
+        "CV_Accuracy_Std": float(df_folds["Accuracy"].std()),
+        "CV_F1_Mean": float(df_folds["F1_Score"].mean()),
+        "Threshold": threshold,
+        "Fold_Details": fold_metrics
+    }
+    return summary
+

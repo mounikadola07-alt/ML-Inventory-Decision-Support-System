@@ -99,3 +99,86 @@ def test_demand_momentum_strict_shift():
     res_mod = add_demand_momentum(df_mod, "Store", "Date", "Sales", base_window=2)
     assert res_mod.loc[3, "Sales_Momentum2"] == res.loc[3, "Sales_Momentum2"]
 
+
+def test_rolling_cv_strict_shift():
+    from src.features import add_rolling_coefficient_of_variation
+    df = pd.DataFrame({
+        "Store": [1, 1, 1, 1],
+        "Date": pd.date_range("2023-01-01", periods=4, freq="W"),
+        "Sales": [10.0, 20.0, 30.0, 40.0]
+    })
+    res = add_rolling_coefficient_of_variation(df, "Store", "Date", "Sales", windows=[2])
+    assert "Sales_RollCV2" in res.columns
+    # Mutating current Sales at t=3 must NOT alter t=3 feature value
+    df_mod = df.copy()
+    df_mod.loc[3, "Sales"] = 8888.0
+    res_mod = add_rolling_coefficient_of_variation(df_mod, "Store", "Date", "Sales", windows=[2])
+    assert res_mod.loc[3, "Sales_RollCV2"] == res.loc[3, "Sales_RollCV2"]
+
+
+def test_demand_acceleration_and_jerk_strict_shift():
+    from src.features import add_demand_acceleration_and_jerk
+    df = pd.DataFrame({
+        "Store": [1, 1, 1, 1, 1],
+        "Date": pd.date_range("2023-01-01", periods=5, freq="W"),
+        "Sales": [10.0, 20.0, 35.0, 55.0, 80.0]
+    })
+    res = add_demand_acceleration_and_jerk(df, "Store", "Date", "Sales")
+    assert "Sales_Velocity" in res.columns
+    assert "Sales_Acceleration" in res.columns
+    assert "Sales_Jerk" in res.columns
+    # Row 4 (Sales=80):
+    # L1=55, L2=35, L3=20, L4=10
+    # Velocity = 55 - 35 = 20
+    # Accel = 55 - 2*35 + 20 = 5
+    # Jerk = 55 - 3*35 + 3*20 - 10 = 55 - 105 + 60 - 10 = 0
+    assert res.loc[4, "Sales_Velocity"] == 20.0
+    assert res.loc[4, "Sales_Acceleration"] == 5.0
+    assert res.loc[4, "Sales_Jerk"] == 0.0
+    # Mutating current period row 4 Sales must NOT change these features
+    df_mod = df.copy()
+    df_mod.loc[4, "Sales"] = 9999.0
+    res_mod = add_demand_acceleration_and_jerk(df_mod, "Store", "Date", "Sales")
+    assert res_mod.loc[4, "Sales_Velocity"] == 20.0
+    assert res_mod.loc[4, "Sales_Acceleration"] == 5.0
+    assert res_mod.loc[4, "Sales_Jerk"] == 0.0
+
+
+def test_multi_window_ewma_ratios_strict_shift():
+    from src.features import add_multi_window_ewma_ratios
+    df = pd.DataFrame({
+        "Store": [1, 1, 1, 1],
+        "Date": pd.date_range("2023-01-01", periods=4, freq="W"),
+        "Sales": [10.0, 20.0, 30.0, 40.0]
+    })
+    res = add_multi_window_ewma_ratios(df, "Store", "Date", "Sales", spans=[3, 7])
+    assert "Sales_EWMA3" in res.columns
+    assert "Sales_EWMA7" in res.columns
+    assert "Sales_EWMARatio_3_7" in res.columns
+    # Strict shift: row 3 cannot know about row 3's Sales
+    df_mod = df.copy()
+    df_mod.loc[3, "Sales"] = 7777.0
+    res_mod = add_multi_window_ewma_ratios(df_mod, "Store", "Date", "Sales", spans=[3, 7])
+    assert res_mod.loc[3, "Sales_EWMARatio_3_7"] == res.loc[3, "Sales_EWMARatio_3_7"]
+
+
+def test_leak_free_expanding_stats_strict_shift():
+    from src.features import add_leak_free_expanding_stats
+    df = pd.DataFrame({
+        "Store": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        "Date": pd.date_range("2023-01-01", periods=10, freq="W"),
+        "Sales": [10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0]
+    })
+    res = add_leak_free_expanding_stats(df, "Store", "Date", "Sales", min_periods=3)
+    assert "Store_Hist_Expanding_Mean" in res.columns
+    assert "Store_Hist_Expanding_Std" in res.columns
+    # Row 9 (Sales=100): Expanding mean must only be computed over rows 0..8 (values 10..90)
+    expected_mean = np.mean([10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0])
+    assert pytest.approx(res.loc[9, "Store_Hist_Expanding_Mean"]) == expected_mean
+    # Altering row 9 Sales must NOT affect row 9 expanding stats
+    df_mod = df.copy()
+    df_mod.loc[9, "Sales"] = 99999.0
+    res_mod = add_leak_free_expanding_stats(df_mod, "Store", "Date", "Sales", min_periods=3)
+    assert res_mod.loc[9, "Store_Hist_Expanding_Mean"] == res.loc[9, "Store_Hist_Expanding_Mean"]
+
+

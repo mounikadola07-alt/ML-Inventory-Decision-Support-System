@@ -21,12 +21,18 @@ from src.features import (
     add_cyclical_calendar_features,
     add_leak_free_lags,
     add_leak_free_rolling,
-    add_demand_momentum
+    add_demand_momentum,
+    add_rolling_coefficient_of_variation,
+    add_demand_acceleration_and_jerk,
+    add_multi_window_ewma_ratios,
+    add_calendar_interaction_features,
+    add_leak_free_expanding_stats
 )
 from src.validation import (
     ChronologicalTimeSeriesSplit,
     split_locked_final_holdout,
-    run_walk_forward_cv
+    run_walk_forward_cv,
+    run_walk_forward_classification_cv
 )
 from src.models import (
     Lag1NaiveModel,
@@ -38,7 +44,11 @@ from src.models import (
     create_lightgbm_regressor,
     create_random_forest_classifier,
     create_xgboost_classifier,
-    create_lightgbm_classifier
+    create_lightgbm_classifier,
+    create_soft_voting_ensemble,
+    create_calibrated_classifier,
+    calibrate_threshold_youden_j,
+    calibrate_threshold_f1
 )
 from src.metrics import (
     evaluate_all_metrics,
@@ -153,18 +163,29 @@ def run_walmart_experiment() -> Dict[str, Any]:
     y_dev_surge = (dev_df["Weekly_Sales"] > dev_df["Store"].map(store_p75)).astype(int)
     y_holdout_surge = (holdout_df["Weekly_Sales"] > holdout_df["Store"].map(store_p75)).astype(int)
     
+    scale_pos_w = float((len(y_dev_surge) - sum(y_dev_surge)) / sum(y_dev_surge))
     clf_models = {
-        "Random_Forest_Clf": create_random_forest_classifier(n_estimators=150, max_depth=10, min_samples_leaf=2, class_weight="balanced"),
-        "LightGBM_Clf": create_lightgbm_classifier(n_estimators=150, num_leaves=31, max_depth=5, learning_rate=0.03, class_weight="balanced"),
-        "XGBoost_Clf": create_xgboost_classifier(n_estimators=120, max_depth=4, learning_rate=0.03, scale_pos_weight=float((len(y_dev_surge)-sum(y_dev_surge))/sum(y_dev_surge)))
+        "Random_Forest_Clf": lambda: create_random_forest_classifier(n_estimators=150, max_depth=10, min_samples_leaf=2, class_weight="balanced"),
+        "LightGBM_Clf": lambda: create_lightgbm_classifier(n_estimators=150, num_leaves=31, max_depth=5, learning_rate=0.03, class_weight="balanced"),
+        "XGBoost_Clf": lambda: create_xgboost_classifier(n_estimators=120, max_depth=4, learning_rate=0.03, scale_pos_weight=scale_pos_w),
+        "Calibrated_Ensemble_Clf": lambda: create_soft_voting_ensemble([
+            ("lgb", create_lightgbm_classifier(n_estimators=150, num_leaves=31, max_depth=5, learning_rate=0.03, class_weight="balanced")),
+            ("rf", create_random_forest_classifier(n_estimators=150, max_depth=10, min_samples_leaf=2, class_weight="balanced")),
+            ("xgb", create_xgboost_classifier(n_estimators=120, max_depth=4, learning_rate=0.03, scale_pos_weight=scale_pos_w))
+        ], weights=[0.4, 0.3, 0.3])
     }
     
     classification_results = []
-    for c_name, clf in clf_models.items():
+    for c_name, clf_fn in clf_models.items():
+        clf = clf_fn()
         clf.fit(X_dev, y_dev_surge)
+        dev_probs = clf.predict_proba(X_dev)[:, 1]
         probs = clf.predict_proba(X_holdout)[:, 1]
+        opt_thresh = calibrate_threshold_youden_j(y_dev_surge, dev_probs)
         c_metrics = evaluate_classification_metrics(y_holdout_surge, probs, threshold=0.5, model_name=c_name)
         classification_results.append(c_metrics)
+        c_metrics_cal = evaluate_classification_metrics(y_holdout_surge, probs, threshold=opt_thresh, model_name=f"{c_name}_YoudenCalibrated")
+        classification_results.append(c_metrics_cal)
         
     # Inventory Replenishment & Simulation for Store 1
     s1_mask = holdout_df["Store"] == 1
@@ -246,9 +267,16 @@ def run_online_retail_experiment() -> Dict[str, Any]:
     
     # Feature engineering
     df = add_cyclical_calendar_features(df, "Date")
-    df = add_leak_free_lags(df, "StockCode", "Date", "Daily_Quantity", lags=[1, 2, 7])
-    df = add_leak_free_rolling(df, "StockCode", "Date", "Daily_Quantity", windows=[7, 14])
+    df = add_leak_free_lags(df, "StockCode", "Date", "Daily_Quantity", lags=[1, 2, 3, 4, 7, 14])
+    df = add_leak_free_rolling(df, "StockCode", "Date", "Daily_Quantity", windows=[3, 7, 14])
     df = add_demand_momentum(df, "StockCode", "Date", "Daily_Quantity", base_window=7)
+    df = add_demand_momentum(df, "StockCode", "Date", "Daily_Quantity", base_window=14)
+    df = add_rolling_coefficient_of_variation(df, "StockCode", "Date", "Daily_Quantity", windows=[7, 14])
+    df = add_demand_acceleration_and_jerk(df, "StockCode", "Date", "Daily_Quantity")
+    df = add_multi_window_ewma_ratios(df, "StockCode", "Date", "Daily_Quantity", spans=[3, 7, 14])
+    df = add_leak_free_expanding_stats(df, "StockCode", "Date", "Daily_Quantity")
+    df = add_calendar_interaction_features(df, "Date", demand_mean_col="Daily_Quantity_RollMean7")
+    df["StockCode_Cat"] = df["StockCode"].astype("category").cat.codes
     
     df_clean = df.dropna().reset_index(drop=True)
     dev_df, holdout_df = split_locked_final_holdout(df_clean, "Date", holdout_periods=28)
@@ -259,6 +287,10 @@ def run_online_retail_experiment() -> Dict[str, Any]:
         "Daily_Quantity_RollMean7", "Daily_Quantity_RollMean14",
         "Daily_Quantity_RollStd7", "Daily_Quantity_Momentum7"
     ]
+    
+    clf_features = [c for c in df_clean.columns if c not in [
+        "Date", "StockCode", "Daily_Quantity", "Daily_Revenue", "Transaction_Count", "Demand_Segment"
+    ]]
     
     # 3-Fold Walk-Forward Cross Validation on development set
     cv = ChronologicalTimeSeriesSplit(n_splits=3, horizon_periods=14, min_train_periods=60)
@@ -313,19 +345,44 @@ def run_online_retail_experiment() -> Dict[str, Any]:
     y_dev_surge = (dev_df["Daily_Quantity"] > dev_df["StockCode"].map(sku_p75)).astype(int)
     y_holdout_surge = (holdout_df["Daily_Quantity"] > holdout_df["StockCode"].map(sku_p75)).astype(int)
     
-    scale_pos_o = float((len(y_dev_surge)-sum(y_dev_surge))/sum(y_dev_surge))
+    scale_pos_o = float((len(y_dev_surge) - sum(y_dev_surge)) / sum(y_dev_surge))
     clf_models = {
-        "Random_Forest_Clf": create_random_forest_classifier(n_estimators=150, max_depth=6, min_samples_leaf=2, class_weight="balanced"),
-        "LightGBM_Clf": create_lightgbm_classifier(n_estimators=120, num_leaves=20, max_depth=4, learning_rate=0.03, class_weight="balanced"),
-        "XGBoost_Clf": create_xgboost_classifier(n_estimators=120, max_depth=3, learning_rate=0.03, scale_pos_weight=scale_pos_o)
+        "Random_Forest_Clf": lambda: create_random_forest_classifier(n_estimators=200, max_depth=10, min_samples_leaf=2),
+        "LightGBM_Clf": lambda: create_lightgbm_classifier(n_estimators=180, num_leaves=28, max_depth=5, learning_rate=0.03),
+        "XGBoost_Clf": lambda: create_xgboost_classifier(n_estimators=150, max_depth=4, learning_rate=0.03, scale_pos_weight=scale_pos_o),
+        "Calibrated_Ensemble_Clf": lambda: create_soft_voting_ensemble([
+            ("lgb", create_lightgbm_classifier(n_estimators=180, num_leaves=28, max_depth=5, learning_rate=0.03)),
+            ("rf", create_random_forest_classifier(n_estimators=200, max_depth=10, min_samples_leaf=2)),
+            ("xgb", create_xgboost_classifier(n_estimators=150, max_depth=4, learning_rate=0.03, scale_pos_weight=scale_pos_o))
+        ], weights=[0.5, 0.25, 0.25])
     }
     
+    # 3-Fold Walk-Forward Cross Validation for Classifiers
+    dev_df_clf = dev_df.copy()
+    dev_df_clf["y_surge"] = y_dev_surge
+    clf_cv = ChronologicalTimeSeriesSplit(n_splits=3, horizon_periods=14, min_train_periods=60)
+    clf_cv_results = {}
+    for c_name, factory in clf_models.items():
+        print(f"    Running 3-fold CV for Online Retail Classifier: {c_name}")
+        c_res = run_walk_forward_classification_cv(
+            dev_df_clf, clf_features, "y_surge", "Date", factory, clf_cv, threshold=0.5, model_name=c_name
+        )
+        clf_cv_results[c_name] = c_res
+
+    # Locked Holdout Evaluation for Classifiers
     classification_results = []
-    for c_name, clf in clf_models.items():
-        clf.fit(X_dev, y_dev_surge)
-        probs = clf.predict_proba(X_holdout)[:, 1]
+    X_dev_clf = dev_df[clf_features]
+    X_holdout_clf = holdout_df[clf_features]
+    for c_name, factory in clf_models.items():
+        clf = factory()
+        clf.fit(X_dev_clf, y_dev_surge)
+        dev_probs = clf.predict_proba(X_dev_clf)[:, 1]
+        probs = clf.predict_proba(X_holdout_clf)[:, 1]
+        opt_thresh = calibrate_threshold_youden_j(y_dev_surge, dev_probs)
         c_metrics = evaluate_classification_metrics(y_holdout_surge, probs, threshold=0.5, model_name=c_name)
         classification_results.append(c_metrics)
+        c_metrics_cal = evaluate_classification_metrics(y_holdout_surge, probs, threshold=opt_thresh, model_name=f"{c_name}_YoudenCalibrated")
+        classification_results.append(c_metrics_cal)
 
     # Segment-Level Evaluation across High_Volume, Medium_Volume, Intermittent_Low
     segment_results = {}
@@ -353,6 +410,7 @@ def run_online_retail_experiment() -> Dict[str, Any]:
         "Evaluation_Horizon": "28 days (locked chronological holdout)",
         "Observations_Holdout": len(y_holdout),
         "CV_Results": cv_results,
+        "Classification_CV_Results": clf_cv_results,
         "Holdout_Metrics": holdout_results,
         "Classification_Surge_Metrics": classification_results,
         "Segment_Holdout_Metrics": segment_results
@@ -401,20 +459,29 @@ def run_m5_experiment() -> Dict[str, Any]:
     print("    Running M5 Intermittent Occurrence Classification (ROC AUC / Accuracy)...")
     y_dev_occ = (y_dev > 0).astype(int)
     y_holdout_occ = (y_holdout > 0).astype(int)
-    scale_pos_occ = float((len(y_dev_occ)-sum(y_dev_occ))/sum(y_dev_occ))
-    
+    scale_pos_occ = float((len(y_dev_occ) - sum(y_dev_occ)) / sum(y_dev_occ))
     clf_models = {
-        "Random_Forest_Clf": create_random_forest_classifier(n_estimators=150, max_depth=6, min_samples_leaf=3, class_weight="balanced"),
-        "LightGBM_Clf": create_lightgbm_classifier(n_estimators=100, num_leaves=15, max_depth=3, learning_rate=0.03, class_weight="balanced"),
-        "XGBoost_Clf": create_xgboost_classifier(n_estimators=100, max_depth=3, learning_rate=0.03, scale_pos_weight=scale_pos_occ)
+        "Random_Forest_Clf": lambda: create_random_forest_classifier(n_estimators=150, max_depth=6, min_samples_leaf=3, class_weight="balanced"),
+        "LightGBM_Clf": lambda: create_lightgbm_classifier(n_estimators=100, num_leaves=15, max_depth=3, learning_rate=0.03, class_weight="balanced"),
+        "XGBoost_Clf": lambda: create_xgboost_classifier(n_estimators=100, max_depth=3, learning_rate=0.03, scale_pos_weight=scale_pos_occ),
+        "Calibrated_Ensemble_Clf": lambda: create_soft_voting_ensemble([
+            ("lgb", create_lightgbm_classifier(n_estimators=100, num_leaves=15, max_depth=3, learning_rate=0.03, class_weight="balanced")),
+            ("rf", create_random_forest_classifier(n_estimators=150, max_depth=6, min_samples_leaf=3, class_weight="balanced")),
+            ("xgb", create_xgboost_classifier(n_estimators=100, max_depth=3, learning_rate=0.03, scale_pos_weight=scale_pos_occ))
+        ], weights=[0.4, 0.3, 0.3])
     }
     
     classification_results = []
-    for c_name, clf in clf_models.items():
+    for c_name, clf_fn in clf_models.items():
+        clf = clf_fn()
         clf.fit(X_dev, y_dev_occ)
+        dev_probs = clf.predict_proba(X_dev)[:, 1]
         probs = clf.predict_proba(X_holdout)[:, 1]
+        opt_thresh = calibrate_threshold_youden_j(y_dev_occ, dev_probs)
         c_metrics = evaluate_classification_metrics(y_holdout_occ, probs, threshold=0.5, model_name=c_name)
         classification_results.append(c_metrics)
+        c_metrics_cal = evaluate_classification_metrics(y_holdout_occ, probs, threshold=opt_thresh, model_name=f"{c_name}_YoudenCalibrated")
+        classification_results.append(c_metrics_cal)
         
     return {
         "Dataset": "M5 Intermittent Grocery Demand",
@@ -442,11 +509,16 @@ def main():
         "M5_Grocery": m5_res
     }
     
+    print("\n>>> Executing Four-Policy Cross-Regime Study (Policies A, B, C, D)...")
+    from src.policy_comparison import run_full_cross_regime_study
+    policy_summary = run_full_cross_regime_study(output_dir="results")
+    all_experiments["Policy_Comparison"] = policy_summary
+
     out_file = "experiment_results.json"
     with open(out_file, "w") as f:
         json.dump(all_experiments, f, indent=2)
         
-    print(f"\nSaved verified experiment results to {out_file} successfully!")
+    print(f"\nSaved verified experiment results to {out_file} and results/ directory successfully!")
     print("================================================================================")
 
 

@@ -6,11 +6,13 @@ and production tree ensembles (Random Forest, XGBoost, LightGBM).
 
 import numpy as np
 import pandas as pd
-from typing import Optional, Union
-from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from typing import Optional, Union, List, Tuple
+from sklearn.base import BaseEstimator, RegressorMixin, ClassifierMixin
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier, VotingClassifier
+from sklearn.calibration import CalibratedClassifierCV
+from sklearn.metrics import roc_curve, precision_recall_curve
 from xgboost import XGBRegressor, XGBClassifier
-from lightgbm import LGBMRegressor, LGBMClassifier
+from lightgbm import LGBMClassifier, LGBMRegressor
 
 
 class Lag1NaiveModel(BaseEstimator, RegressorMixin):
@@ -261,5 +263,77 @@ def create_lightgbm_classifier(
         n_jobs=-1,
         verbose=-1
     )
+
+
+def calibrate_threshold_youden_j(
+    y_true: np.ndarray,
+    y_prob: np.ndarray
+) -> float:
+    """
+    Computes optimal decision threshold using Youden's J statistic:
+    J = Sensitivity + Specificity - 1 = TPR - FPR.
+    Derived strictly from training/development probabilities to avoid data snooping.
+    """
+    y_true = np.asarray(y_true, dtype=int)
+    y_prob = np.asarray(y_prob, dtype=float)
+    if len(np.unique(y_true)) < 2:
+        return 0.5
+    fpr, tpr, thresholds = roc_curve(y_true, y_prob)
+    j_scores = tpr - fpr
+    best_idx = int(np.argmax(j_scores))
+    best_thresh = float(thresholds[best_idx])
+    return float(np.clip(best_thresh, 0.05, 0.95))
+
+
+def calibrate_threshold_f1(
+    y_true: np.ndarray,
+    y_prob: np.ndarray
+) -> float:
+    """
+    Computes optimal decision threshold maximizing F1 score on training/development set.
+    """
+    y_true = np.asarray(y_true, dtype=int)
+    y_prob = np.asarray(y_prob, dtype=float)
+    if len(np.unique(y_true)) < 2:
+        return 0.5
+    prec, rec, thresholds = precision_recall_curve(y_true, y_prob)
+    f1s = 2.0 * (prec * rec) / (prec + rec + 1e-8)
+    if len(thresholds) == 0:
+        return 0.5
+    best_idx = int(np.argmax(f1s[:len(thresholds)]))
+    return float(np.clip(thresholds[best_idx], 0.05, 0.95))
+
+
+def create_calibrated_classifier(
+    base_estimator: BaseEstimator,
+    method: str = "sigmoid",
+    cv: Union[int, str] = 3
+) -> CalibratedClassifierCV:
+    """
+    Wraps an estimator in Platt scaling (sigmoid) or isotonic regression calibration.
+    Reduces probability distortion and aligns classification confidence with true incidence.
+    """
+    return CalibratedClassifierCV(
+        estimator=base_estimator,
+        method=method,
+        cv=cv
+    )
+
+
+def create_soft_voting_ensemble(
+    estimators: List[Tuple[str, BaseEstimator]],
+    weights: Optional[List[float]] = None
+) -> VotingClassifier:
+    """
+    Creates a soft-voting probability ensemble over diverse tree learners
+    (e.g., LightGBM, Random Forest, XGBoost) to reduce variance and push ROC AUC.
+    """
+    return VotingClassifier(
+        estimators=estimators,
+        voting="soft",
+        weights=weights,
+        n_jobs=-1
+    )
+
 
 
