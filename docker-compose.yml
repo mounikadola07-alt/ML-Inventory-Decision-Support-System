@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  test:
+    build: .
+    container_name: inventory-research-test
+    command: python -m pytest tests/ -v
+
+  experiments:
+    build: .
+    container_name: inventory-research-experiments
+    command: python run_experiments.py
+
+  dashboard:
+    build: .
+    container_name: inventory-research-dashboard
+    stdin_open: true
+    tty: true
+    command: python src/interactive_dashboard.py
