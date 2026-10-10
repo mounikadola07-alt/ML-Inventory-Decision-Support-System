@@ -2,7 +2,7 @@
 
 **Project Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
 **Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
-**Audit Timestamp:** 2026-10-10 04:10:50 UTC  
+**Audit Timestamp:** 2026-10-10 04:14:55 UTC  
 **Certification Status:** **100% COMPLIANT & VERIFIED**  
 
 ---
@@ -29,7 +29,7 @@ Every research asset, manuscript, code module, and presentation deck has been cr
 
 | Asset Name | Status | Size (KB) | SHA-256 Checksum |
 | :--- | :--- | :--- | :--- |
-| `ML_Inventory_Decision_Support_Paper.docx` | **VERIFIED** | 2,992.8 KB | `a9353f6b12cf90ea64ab1fad4859...` |
+| `ML_Inventory_Decision_Support_Paper.docx` | **VERIFIED** | 2,992.8 KB | `5476834059896d8a60a21621c668...` |
 | `Research_Paper_MLA.md` | **VERIFIED** | 47.6 KB | `0f340c25cf959115680282146ed5...` |
 | `Research_Paper.md` | **VERIFIED** | 47.6 KB | `0f340c25cf959115680282146ed5...` |
 | `Research_Presentation_Deck.pptx` | **VERIFIED** | 1,423.4 KB | `61bd7499a8581bc9a3abcdad3e45...` |
