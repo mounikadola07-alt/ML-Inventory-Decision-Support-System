@@ -14,9 +14,13 @@ An end-to-end, scientifically audited Machine Learning Inventory Decision Suppor
 
 | Artifact | Format | Description |
 | :--- | :--- | :--- |
+| **Submission & Defense Dossier** | [**`SUBMISSION_AND_DEFENSE_DOSSIER.md`**](SUBMISSION_AND_DEFENSE_DOSSIER.md) | **Master Submission Guide & Defense Dossier** covering portal walkthroughs, defense timing benchmarks, and trap rebuttals. |
 | **Research Manuscript** | [**`ML_Inventory_Decision_Support_Paper.docx`**](ML_Inventory_Decision_Support_Paper.docx) | **11-Page Publication Manuscript** (3,277 words) with native Word OMML equations, 9 embedded figures, and solid black borders. |
+| **Camera-Ready Preprint** | [**`ML_Inventory_Decision_Support_Paper.pdf`**](ML_Inventory_Decision_Support_Paper.pdf) | **Exact 11-Page Camera-Ready PDF** with 0.75 pt borders matching target reference formatting. |
 | **Markdown Paper** | [**`Research_Paper_MLA.md`**](Research_Paper_MLA.md) | Synchronized MLA 9th Edition manuscript with KaTeX formulas and full citations. |
-| **Academic Slide Deck** | [**`Research_Presentation_Deck.pptx`**](Research_Presentation_Deck.pptx) | **16:9 Widescreen Presentation Deck** (1.45 MB) for thesis defense, seminars, and stakeholder briefings. |
+| **Academic Slide Deck** | [**`Research_Presentation_Deck.pptx`**](Research_Presentation_Deck.pptx) | **16:9 Widescreen Presentation Deck** (7 slides) for thesis defense, seminars, and stakeholder briefings. |
+| **Academic Poster** | [**`Academic_Conference_Poster.pptx`**](Academic_Conference_Poster.pptx) | **48" $\times$ 36" Academic Conference Poster** in 3-column format for symposium presentations. |
+| **Executive Handout** | [**`EXECUTIVE_SUMMARY_HANDOUT.docx`**](EXECUTIVE_SUMMARY_HANDOUT.docx) | 1-page committee briefing handout with Tables 1 & 2 and enterprise takeaways. |
 | **Journal Cover Letter** | [**`Journal_Submission_Cover_Letter.docx`**](Journal_Submission_Cover_Letter.docx) | Editor-in-Chief submission cover letter addressed to the *International Journal of Forecasting*. |
 | **Supplementary Appendix** | [**`Supplementary_Materials.docx`**](Supplementary_Materials.docx) | Online Technical Appendix with extended mathematical proofs and hyperparameter specifications. |
 | **Reviewer Defense Dossier** | [**`Reviewer_Defense_Dossier.md`**](Reviewer_Defense_Dossier.md) | Author rebuttal guide pre-empting and answering the top 7 peer review critique questions. |
