@@ -8,8 +8,4 @@ __pycache__/
 *.pyc
 ~$*
 .agents/
-build_full_reference_paper.py
-create_better_methodology_fig.py
-generate_mla_paper.py
-test_omml.py
 ML_Inventory_Decision_Support_System_original.ipynb
