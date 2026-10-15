@@ -33,7 +33,7 @@ def create_notebook():
     cells.append(nbf.v4.new_markdown_cell("""# Machine Learning Inventory Decision Support System
 ## Research-Quality Demand Forecasting & Stochastic Replenishment Control
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sashank321/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mounikadola07-alt/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)
 
 ### Section 1: Executive Summary
 This notebook delivers a production-grade, empirically audited Machine Learning Inventory Decision Support System deployed across three heterogeneous commercial environments:
@@ -89,7 +89,7 @@ from typing import Dict, Any, List
 # If executing inside Google Colab runtime, clone the repository to access data/ and src/
 if "google.colab" in sys.modules or not os.path.exists("data"):
     if not os.path.exists("data") and not os.path.exists("ML-Inventory-Decision-Support-System"):
-        os.system("git clone -q https://github.com/sashank321/ML-Inventory-Decision-Support-System.git")
+        os.system("git clone -q https://github.com/mounikadola07-alt/ML-Inventory-Decision-Support-System.git")
     if os.path.exists("ML-Inventory-Decision-Support-System") and not os.path.exists("data"):
         os.chdir("ML-Inventory-Decision-Support-System")
     if os.path.exists(".git"):

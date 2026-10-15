@@ -152,10 +152,10 @@ def create_latex_package():
 \title{\textbf{An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support}}
 
 \author{
-  \textbf{Sashank P.}, \textbf{Abhinay Sai}, \textbf{Poli Naidu}, and \textbf{Sushama Rani Dutta} \\
+  \textbf{Dola Mounika} \\
   Department of Computer Science and Engineering, \\
   Koneru Lakshmaiah Education Foundation, Hyderabad, Telangana, India \\
-  \texttt{sashank.p@klh.edu.in}
+  \texttt{mounika.dola07@gmail.com}
 }
 
 \date{10 October 2026}

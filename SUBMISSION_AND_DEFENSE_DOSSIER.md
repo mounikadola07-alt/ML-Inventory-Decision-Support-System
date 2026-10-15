@@ -1,12 +1,12 @@
 # MASTER JOURNAL SUBMISSION & ORAL DEFENSE DOSSIER
 
 **Project Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
-**Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
+**Authors:** Dola Mounika  
 **Affiliation:** Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation  
 **Target Journal:** *International Journal of Forecasting* (Elsevier) / *European Journal of Operational Research* (EJOR)  
 **Verification Status:** 10 / 10 Automated Package Checks Passed (100%) | 90 / 90 Pytest Unit/Integration Tests Passed (100%)  
-**Repository:** [GitHub Repository](https://github.com/sashank321/ML-Inventory-Decision-Support-System.git) (Commit `23bb7ff`, Branch `main`)  
-**Colab Execution Link:** [Open in Google Colab](https://colab.research.google.com/github/sashank321/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)  
+**Repository:** [GitHub Repository](https://github.com/mounikadola07-alt/ML-Inventory-Decision-Support-System.git) (Commit `23bb7ff`, Branch `main`)  
+**Colab Execution Link:** [Open in Google Colab](https://colab.research.google.com/github/mounikadola07-alt/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)  
 
 ---
 

@@ -72,7 +72,7 @@ def verify_and_certify():
     cert_md = f"""# Cryptographic Audit Certificate & Submission Compliance Verification
 
 **Project Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
-**Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
+**Authors:** Dola Mounika  
 **Audit Timestamp:** {timestamp}  
 **Certification Status:** **100% COMPLIANT & VERIFIED**  
 

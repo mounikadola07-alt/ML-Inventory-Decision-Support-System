@@ -121,7 +121,7 @@ def build_supplementary():
           bold=True, size=13, align=WD_ALIGN_PARAGRAPH.CENTER, space_before=4, space_after=3, indent=0)
     add_p("An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support", 
           bold=True, size=10.5, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=2, indent=0)
-    add_p("Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta\nDepartment of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India", 
+    add_p("Dola Mounika\nDepartment of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India", 
           size=9, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=8, indent=0)
 
     # APPENDIX A: Extended Mathematical Proofs
@@ -228,7 +228,7 @@ def build_supplementary():
     md_content = r"""# Online Supplementary Materials & Technical Appendix
 
 **An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support**  
-*Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta*  
+*Dola Mounika*  
 Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India  
 
 ---

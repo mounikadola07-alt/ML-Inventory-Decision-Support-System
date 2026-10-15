@@ -1,7 +1,7 @@
 # Peer Reviewer Defense Dossier & Rebuttal Guide
 
 **Study Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
-**Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
+**Authors:** Dola Mounika  
 **Target Journal:** *International Journal of Forecasting* / *European Journal of Operational Research*  
 
 ---

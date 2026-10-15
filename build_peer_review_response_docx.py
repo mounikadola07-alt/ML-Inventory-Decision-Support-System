@@ -37,7 +37,7 @@ def main():
     r_m = p_meta.add_run(
         "Manuscript Ref: IJF-D-26-00412\n"
         "Title: An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support\n"
-        "Authors: Sashank P., Abhinay Sai, Poli Naidu, Sushama Rani Dutta\n"
+        "Authors: Dola Mounika\n"
         "Journal: International Journal of Forecasting"
     )
     r_m.font.name = "Times New Roman"

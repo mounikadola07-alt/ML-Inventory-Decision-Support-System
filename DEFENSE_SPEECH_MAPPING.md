@@ -1,7 +1,7 @@
 # 15-Minute Thesis Defense & Conference Speech Alignment Guide
 
 **Project Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
-**Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
+**Authors:** Dola Mounika  
 **Department:** Computer Science and Engineering, Koneru Lakshmaiah Education Foundation  
 **Target Duration:** Exactly 15 Minutes (12 Minutes Presentation + 3 Minutes Transition / Opening Q&A)
 

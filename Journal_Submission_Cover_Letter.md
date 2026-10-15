@@ -2,7 +2,7 @@
 
 **Department of Computer Science and Engineering**  
 Koneru Lakshmaiah Education Foundation, Hyderabad, Telangana, India  
-Email: `sashank.p@klh.edu.in`  
+Email: `mounika.dola07@gmail.com`  
 
 **Date:** 10 October 2026  
 
@@ -34,7 +34,7 @@ Thank you for your time and editorial consideration. We look forward to hearing 
 
 Sincerely,  
 
-**Sashank P.** *(Corresponding Author)*  
-On behalf of co-authors: Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
+**Dola Mounika** *(Corresponding Author)*  
+  
 Department of Computer Science and Engineering  
 Koneru Lakshmaiah Education Foundation, Hyderabad, Telangana, India  

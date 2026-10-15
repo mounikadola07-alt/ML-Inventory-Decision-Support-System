@@ -1,6 +1,6 @@
 # Machine Learning Inventory Decision Support System
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/sashank321/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mounikadola07-alt/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Tests Passing](https://img.shields.io/badge/pytest-90%20passed-brightgreen.svg)](tests/)
 [![Audit Status](https://img.shields.io/badge/audit-passed%2010%2F10-success.svg)](AUDIT_REPORT.md)
@@ -33,8 +33,7 @@ An end-to-end, scientifically audited Machine Learning Inventory Decision Suppor
 ## Interactive Cloud Notebooks (Google Colab)
 
 Run the entire 18-section research pipeline in the cloud with zero setup:
-* **[Open in Google Colab (GitHub Repository Source)](https://colab.research.google.com/github/sashank321/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)**
-* **[Open in Google Colab (Public Gist Source)](https://colab.research.google.com/gist/sashank321/155d8ddce2daaba42a1fad0c52176303/ML_Inventory_Decision_Support_System_improved.ipynb)**
+* **[Open in Google Colab (GitHub Repository Source)](https://colab.research.google.com/github/mounikadola07-alt/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)**
 
 ---
 
@@ -128,12 +127,12 @@ python -m pytest tests/ -v
 If you find this research study, code, or decision support framework useful, please cite it:
 
 ```bibtex
-@article{sashank2026inventory,
+@article{dola2026inventory,
   title={An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support},
-  author={P., Sashank and Sai, Abhinay and Naidu, Poli and Dutta, Sushama Rani},
+  author={Dola, Mounika},
   journal={International Journal of Forecasting},
   year={2026},
   month={10},
-  url={https://github.com/sashank321/ML-Inventory-Decision-Support-System}
+  url={https://github.com/mounikadola07-alt/ML-Inventory-Decision-Support-System}
 }
 ```

@@ -15,7 +15,7 @@ from docx.oxml.ns import nsdecls, qn
 PAPER_MD_PATH = "Research_Paper_MLA.md"
 DOCX_PATH = "ML_Inventory_Decision_Support_Paper.docx"
 
-paper_content = """Sashank P.
+paper_content = """Dola Mounika
 
 Professor Faculty Review Committee
 
@@ -651,7 +651,7 @@ def build_docx_paper():
             p.paragraph_format.first_line_indent = Inches(-0.3)
             p.paragraph_format.line_spacing = 1.05
             p.paragraph_format.space_after = Pt(2)
-        elif line.startswith("Sashank P.") or line.startswith("Professor") or line.startswith("Department") or line.startswith("10 October"):
+        elif line.startswith("Dola Mounika") or line.startswith("Professor") or line.startswith("Department") or line.startswith("10 October"):
             p.paragraph_format.line_spacing = 1.0
             p.paragraph_format.space_after = Pt(1)
         else:

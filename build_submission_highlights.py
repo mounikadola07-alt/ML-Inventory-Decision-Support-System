@@ -9,7 +9,7 @@ def create_submission_files():
     highlights_content = r"""# Research Highlights & Submission Metadata
 
 **Manuscript Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
-**Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
+**Authors:** Dola Mounika  
 **Target Journal:** *International Journal of Forecasting* (Elsevier) / *European Journal of Operational Research*  
 
 ---
@@ -24,10 +24,7 @@ def create_submission_files():
 ---
 
 ## 2. CRediT Author Statement (Contributor Roles Taxonomy)
-* **Sashank P.:** Conceptualization, Methodology, Software, Formal Analysis, Investigation, Data Curation, Writing – Original Draft, Visualization, Project Administration.
-* **Abhinay Sai:** Software, Validation, Formal Analysis, Investigation, Writing – Review & Editing, Visualization.
-* **Poli Naidu:** Methodology, Investigation, Resources, Data Curation, Writing – Review & Editing.
-* **Sushama Rani Dutta:** Conceptualization, Methodology, Supervision, Project Administration, Funding Acquisition, Writing – Review & Editing.
+* **Dola Mounika:** Conceptualization, Methodology, Software, Validation, Formal Analysis, Investigation, Resources, Data Curation, Writing – Original Draft, Writing – Review & Editing, Visualization, Supervision, Project Administration.
 
 ---
 
@@ -38,9 +35,9 @@ The authors declare that they have no known competing financial interests or per
 
 ## 4. Data & Code Availability Statement
 * **Repository:** All source code, data preprocessing routines, walk-forward cross-validation engines, simulation scripts, and automated test suites are publicly available on GitHub at:  
-  `https://github.com/sashank321/ML-Inventory-Decision-Support-System`
+  `https://github.com/mounikadola07-alt/ML-Inventory-Decision-Support-System`
 * **Interactive Cloud Execution:** A self-contained, 18-section research notebook is runnable with 1 click in Google Colab:  
-  `https://colab.research.google.com/github/sashank321/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb`
+  `https://colab.research.google.com/github/mounikadola07-alt/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb`
 * **Replication Package:** Complete instructions for containerized and local replication are provided in `REPLICATION_PACKAGE.md`.
 """
     with open("HIGHLIGHTS.md", "w", encoding="utf-8") as f:

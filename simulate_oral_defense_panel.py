@@ -56,7 +56,7 @@ def run_simulation(auto=True):
     print("=" * 80)
     print("   THESIS DEFENSE COMMITTEE EXAMINATION SIMULATOR")
     print("   Manuscript: ML and Stochastic Inventory Control Framework")
-    print("   Authors: Sashank P., Abhinay Sai, Poli Naidu, Sushama Rani Dutta")
+    print("   Authors: Dola Mounika")
     print("=" * 80)
     print("\nSimulating examination panel with 4 international experts...\n")
     time.sleep(1)

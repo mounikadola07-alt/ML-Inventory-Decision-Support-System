@@ -1,7 +1,7 @@
 # Online Supplementary Materials & Technical Appendix
 
 **An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support**  
-*Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta*  
+*Dola Mounika*  
 Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India  
 
 ---

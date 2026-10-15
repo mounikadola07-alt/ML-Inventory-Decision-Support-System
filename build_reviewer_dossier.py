@@ -9,7 +9,7 @@ def create_dossier():
     dossier_content = r"""# Peer Reviewer Defense Dossier & Rebuttal Guide
 
 **Study Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
-**Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
+**Authors:** Dola Mounika  
 **Target Journal:** *International Journal of Forecasting* / *European Journal of Operational Research*  
 
 ---
@@ -107,15 +107,14 @@ Using a two-proportion z-test, the difference in stockout frequencies between Po
     runbook_content = r"""# Reproduction Runbook & Replication Package Guide
 
 **Study Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
-**Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
-**Repository:** `https://github.com/sashank321/ML-Inventory-Decision-Support-System`  
+**Authors:** Dola Mounika  
+**Repository:** `https://github.com/mounikadola07-alt/ML-Inventory-Decision-Support-System`  
 
 ---
 
 ## 1. Quick Start: One-Click Cloud Execution
 To run all experiments, train all models, and replicate all figures in Google Colab without local installation:
-* **Google Colab (GitHub):** [Open in Google Colab](https://colab.research.google.com/github/sashank321/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)
-* **Google Colab (Gist):** [Open in Google Colab Gist](https://colab.research.google.com/gist/sashank321/155d8ddce2daaba42a1fad0c52176303/ML_Inventory_Decision_Support_System_improved.ipynb)
+* **Google Colab (GitHub):** [Open in Google Colab](https://colab.research.google.com/github/mounikadola07-alt/ML-Inventory-Decision-Support-System/blob/main/ML_Inventory_Decision_Support_System_improved.ipynb)
 
 ---
 
@@ -127,7 +126,7 @@ To run all experiments, train all models, and replicate all figures in Google Co
 
 ### Clone Repository & Install Dependencies
 ```bash
-git clone https://github.com/sashank321/ML-Inventory-Decision-Support-System.git
+git clone https://github.com/mounikadola07-alt/ML-Inventory-Decision-Support-System.git
 cd ML-Inventory-Decision-Support-System
 pip install -r requirements.txt
 ```

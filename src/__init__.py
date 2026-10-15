@@ -5,4 +5,4 @@ with operational inventory replenishment decision support.
 """
 
 __version__ = "1.0.0"
-__author__ = "Sashank P., Abhinay Sai, Poli Naidu, Sushama Rani Dutta"
+__author__ = "Dola Mounika"

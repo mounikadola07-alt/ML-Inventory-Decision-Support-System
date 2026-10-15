@@ -1,7 +1,7 @@
 # Oral Defense & Conference Presentation Script
 
 **Project Title:** An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support  
-**Authors:** Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
+**Authors:** Dola Mounika  
 **Deck File:** `Research_Presentation_Deck.pptx` (16:9 Widescreen)  
 **Estimated Duration:** 12–15 Minutes  
 

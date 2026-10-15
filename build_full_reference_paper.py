@@ -145,9 +145,9 @@ def build_paper():
     # ==================== PAGE 1 ====================
     add_p("An Empirically Audited Machine Learning and Stochastic Inventory Control Framework for Enterprise Replenishment Decision Support", 
           bold=True, size=13, align=WD_ALIGN_PARAGRAPH.CENTER, space_before=4, space_after=3, indent=0.0)
-    add_p("Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta", size=9.5, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=1, indent=0.0)
+    add_p("Dola Mounika", size=9.5, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=1, indent=0.0)
     add_p("Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation,\nHyderabad, Telangana, India", size=9, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=1, indent=0.0)
-    add_p("sashank.p@klh.edu.in", size=9, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=5, indent=0.0)
+    add_p("mounika.dola07@gmail.com", size=9, align=WD_ALIGN_PARAGRAPH.CENTER, space_after=5, indent=0.0)
     
     # Abstract
     p_abs = doc.add_paragraph()

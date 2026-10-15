@@ -74,7 +74,7 @@ def create_deck():
     p.space_after = Pt(24)
     
     p = tf1.add_paragraph()
-    p.text = "Authors: Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta\nDepartment of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation\nHyderabad, Telangana, India | Email: sashank.p@klh.edu.in"
+    p.text = "Authors: Dola Mounika\nDepartment of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation\nHyderabad, Telangana, India | Email: mounika.dola07@gmail.com"
     p.font.name = "Arial"
     p.font.size = Pt(13)
     p.font.color.rgb = RGBColor(220, 230, 245)

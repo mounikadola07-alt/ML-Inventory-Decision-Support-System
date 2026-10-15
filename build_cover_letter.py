@@ -44,7 +44,7 @@ def create_cover_letter():
         return p
 
     # Sender Info
-    add_p("Department of Computer Science and Engineering\nKoneru Lakshmaiah Education Foundation\nHyderabad, Telangana, India\nEmail: sashank.p@klh.edu.in", size=10, space_after=12)
+    add_p("Department of Computer Science and Engineering\nKoneru Lakshmaiah Education Foundation\nHyderabad, Telangana, India\nEmail: mounika.dola07@gmail.com", size=10, space_after=12)
     
     # Date
     add_p("10 October 2026", space_after=12)
@@ -93,7 +93,7 @@ def create_cover_letter():
     )
     
     # Sign-off
-    add_p("Sincerely,\n\nSashank P. (Corresponding Author)\nOn behalf of all co-authors: Abhinay Sai, Poli Naidu, and Sushama Rani Dutta\nDepartment of Computer Science and Engineering\nKoneru Lakshmaiah Education Foundation, Hyderabad, Telangana, India", space_before=12)
+    add_p("Sincerely,\n\nDola Mounika (Corresponding Author)\n\nDepartment of Computer Science and Engineering\nKoneru Lakshmaiah Education Foundation, Hyderabad, Telangana, India", space_before=12)
 
     docx_path = "Journal_Submission_Cover_Letter.docx"
     doc.save(docx_path)
@@ -104,7 +104,7 @@ def create_cover_letter():
 
 **Department of Computer Science and Engineering**  
 Koneru Lakshmaiah Education Foundation, Hyderabad, Telangana, India  
-Email: `sashank.p@klh.edu.in`  
+Email: `mounika.dola07@gmail.com`  
 
 **Date:** 10 October 2026  
 
@@ -136,8 +136,8 @@ Thank you for your time and editorial consideration. We look forward to hearing 
 
 Sincerely,  
 
-**Sashank P.** *(Corresponding Author)*  
-On behalf of co-authors: Abhinay Sai, Poli Naidu, and Sushama Rani Dutta  
+**Dola Mounika** *(Corresponding Author)*  
+  
 Department of Computer Science and Engineering  
 Koneru Lakshmaiah Education Foundation, Hyderabad, Telangana, India  
 """

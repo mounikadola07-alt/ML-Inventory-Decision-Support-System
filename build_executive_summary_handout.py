@@ -54,7 +54,7 @@ def main():
     # Authors
     p_auth = doc.add_paragraph()
     p_auth.paragraph_format.space_after = Pt(6)
-    r_auth = p_auth.add_run("Sashank P., Abhinay Sai, Poli Naidu, Sushama Rani Dutta | Koneru Lakshmaiah Education Foundation")
+    r_auth = p_auth.add_run("Dola Mounika | Koneru Lakshmaiah Education Foundation")
     r_auth.font.name = "Times New Roman"
     r_auth.font.size = Pt(9.5)
     r_auth.font.italic = True

@@ -54,7 +54,7 @@ def create_poster():
     p.alignment = PP_ALIGN.CENTER
     
     p = tf_b.add_paragraph()
-    p.text = "Sashank P., Abhinay Sai, Poli Naidu, and Sushama Rani Dutta | Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India | Email: sashank.p@klh.edu.in"
+    p.text = "Dola Mounika | Department of Computer Science and Engineering, Koneru Lakshmaiah Education Foundation, Hyderabad, India | Email: mounika.dola07@gmail.com"
     p.font.name = "Arial"
     p.font.size = Pt(22)
     p.font.color.rgb = RGBColor(210, 230, 255)
